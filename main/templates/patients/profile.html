@@ -1,0 +1,94 @@
+{% extends 'patients/base.html' %}
+{% load static %}
+
+{% block title %}Профиль пациента{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-7">
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    <!-- 🩺 Bemor ma'lumotlari -->
+    <div class="card mb-4">
+      <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">👤 Мой профиль</h5>
+      </div>
+      <div class="card-body">
+        <div class="mb-3">
+          <label class="form-label text-muted small">ФИО</label>
+          <input class="form-control-plaintext" value="{{ patient.user.get_full_name }}" readonly>
+        </div>
+        <div class="mb-3">
+          <label class="form-label text-muted small">Электронная почта</label>
+          <input class="form-control-plaintext" value="{{ patient.user.email|default:'Не указана' }}" readonly>
+        </div>
+        <div class="mb-3">
+          <label class="form-label text-muted small">Имя пользователя</label>
+          <input class="form-control-plaintext" value="{{ patient.user.username }}" readonly>
+        </div>
+
+        {% if patient.phone %}
+        <div class="mb-3">
+          <label class="form-label text-muted small">Телефон</label>
+          <input class="form-control-plaintext" value="{{ patient.phone }}" readonly>
+        </div>
+        {% endif %}
+
+        <!-- 🔑 Ochiq parol ko'rsatish (test uchun – production da olib tashlang!) -->
+        
+      </div>
+    </div>
+
+    <!-- 🔒 Parolni yangilash -->
+    <div class="card">
+      <div class="card-header bg-light">
+        <h6 class="mb-0">Изменить пароль</h6>
+      </div>
+      <div class="card-body">
+        <form method="post" novalidate>
+          {% csrf_token %}
+          <div class="mb-3">
+            {{ form.new_password1.label_tag }}
+             <!-- Bootstrap sinfi -->
+              <input type="password" name="{{ form.new_password1.name }}" class="form-control" id="{{ form.new_password1.id_for_label }}">
+            {% if form.new_password1.errors %}
+              <div class="text-danger small">{{ form.new_password1.errors }}</div>
+            {% endif %}
+          </div>
+
+          <div class="mb-3">
+            {{ form.new_password2.label_tag }}
+              <!-- Bootstrap sinfi -->
+              <input type="password" name="{{ form.new_password2.name }}" class="form-control" id="{{ form.new_password2.id_for_label }}">
+            {% if form.new_password2.errors %}
+              <div class="text-danger small">{{ form.new_password2.errors }}</div>
+            {% endif %}
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100">Сохранить пароль</button>
+        </form>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Qo'shimcha: forma inputlariga bootstrap sinf beramiz (avtomatik)
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('input[type=password]').forEach(inp => {
+      inp.classList.add('form-control');
+    });
+  });
+</script>
+{% endblock %}

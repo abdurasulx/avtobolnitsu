@@ -1,0 +1,124 @@
+{% extends 'dbase.html' %}
+{% load static %}
+{% block content %}
+<div class="container-fluid mt-4 px-3 px-md-4">
+  <h2 class="fw-bold text-primary mb-4">
+    {% if form.instance.pk %}Редактирование визита{% else %}Добавление визита{% endif %}
+  </h2>
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="row g-3">
+      <div class="col-md-6">
+        <!-- Patient: Readonly display with full name -->
+        <div class="mb-3">
+          <label class="form-label fw-bold">Пациенты</label>
+          <input type="text" class="form-control" value="{{ form.instance.patient.get_full_name|default:form.patient.value|default:'Не указан' }}" readonly>
+          {{ form.patient.as_hidden }}  <!-- Hidden field to preserve value -->
+          {% if form.patient.errors %}
+            <div class="text-danger small">{{ form.patient.errors }}</div>
+          {% endif %}
+        </div>
+
+        <!-- Doctor: Readonly display -->
+        <div class="mb-3">
+          <label class="form-label fw-bold">Доктор</label>
+          <input type="text" class="form-control" value="{{ form.instance.doctor.user.get_full_name|default:form.doctor.value|default:'Не указан' }}" readonly>
+          {{ form.doctor.as_hidden }}  <!-- Hidden field to preserve value -->
+          {% if form.doctor.errors %}
+            <div class="text-danger small">{{ form.doctor.errors }}</div>
+          {% endif %}
+        </div>
+
+        <!-- Visit Datetime: Readonly -->
+        <div class="mb-3">
+          {{ form.visit_datetime.label_tag }}
+          {% comment %} <input type="text" class="form-control" value="{{ form.instance.visit_datetime|date:'d.m.Y H:i'|default:form.visit_datetime.value }}" readonly> {% endcomment %}
+          {{ form.visit_datetime.as_hidden }}  <!-- Hidden field -->
+          {% if form.visit_datetime.errors %}
+            <div class="text-danger small">{{ form.visit_datetime.errors }}</div>
+          {% endif %}
+        </div>
+
+        <!-- Status: Editable -->
+        <div class="mb-3">
+          {{ form.status.label_tag }}
+          {{ form.status }}
+          {% if form.status.errors %}
+            <div class="text-danger small">{{ form.status.errors }}</div>
+          {% endif %}
+        </div>
+      </div>
+      <div class="col-md-6">
+        <!-- Result: Editable with options -->
+        <div class="mb-3">
+          {{ form.result.label_tag }}
+          {{ form.result }}
+          {% if form.result.errors %}
+            <div class="text-danger small">{{ form.result.errors }}</div>
+          {% endif %}
+          <small class="text-muted d-block mt-1">
+           1️⃣ Пролечено, находится в больнице (стационар)<br>
+2️⃣ Пролечено, находится дома (дома)<br>
+3️⃣ Не лечится (нет)
+          </small>
+        </div>
+
+        <!-- Diagnosis: Editable -->
+        <div class="mb-3">
+          {{ form.diagnosis.label_tag }}
+          {{ form.diagnosis }}
+          {% if form.diagnosis.errors %}
+            <div class="text-danger small">{{ form.diagnosis.errors }}</div>
+          {% endif %}
+        </div>
+
+        <!-- Treatment Plan: Editable -->
+        <div class="mb-3">
+          {{ form.treatment_plan.label_tag }}
+          {{ form.treatment_plan }}
+          {% if form.treatment_plan.errors %}
+            <div class="text-danger small">{{ form.treatment_plan.errors }}</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex gap-2 mt-4">
+      <button type="submit" class="btn btn-primary">Сохранить</button>
+      <a href="{% url 'visit_list' %}" class="btn btn-secondary">Отмена</a>
+    </div>
+  </form>
+</div>
+
+<style>
+/* Responsive enhancements */
+@media (max-width: 768px) {
+  .container-fluid {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  .row.g-3 > .col-md-6 {
+    margin-bottom: 1rem;
+  }
+  .d-flex.gap-2 {
+    flex-direction: column;
+  }
+  .btn {
+    width: 100%;
+  }
+}
+
+/* Form styling */
+.form-control, .form-select {
+  border-radius: 8px;
+}
+.form-label {
+  font-weight: 500;
+}
+.form-control[readonly] {
+  background-color: #f8f9fa;
+  opacity: 0.7;
+}
+</style>
+{% endblock %}

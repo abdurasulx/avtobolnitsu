@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold text-primary">Панель управления</h2>
+    <button class="btn btn-outline-primary btn-sm" id="refreshData">
+      <i class="bi bi-arrow-repeat"></i> Обновить
+    </button>
+  </div>
+
+  <!-- Statistika kartalari -->
+  <div class="row g-4 mb-4">
+    <div class="col-md-4">
+      <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-body">
+          <h5 class="card-title text-muted">Количество приемов сегодня</h5>
+          <h2 class="fw-bold text-primary">{{ daily_visits }}</h2>
+          <small class="text-success"><i class="bi bi-arrow-up"></i> +5% по сравнению с предыдущим днем</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-body">
+          <h5 class="card-title text-muted">Общее количество пациентов</h5>
+          <h2 class="fw-bold text-info">{{ total_patients }}</h2>
+          <small class="text-secondary">Всего зарегистрированных пациентов</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-body">
+          <h5 class="card-title text-muted">Активные врачи</h5>
+          <h2 class="fw-bold text-warning">{{ active_doctors }}</h2>
+          <small class="text-secondary">Сейчас активны в системе</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Jadval -->
+  <div class="card shadow-sm border-0 rounded-3">
+    <div class="card-header bg-primary text-white">
+      Последние визиты
+    </div>
+    <div class="card-body p-0">
+      <table class="table table-hover mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>#</th>
+            <th>Пациент</th>
+            <th>Врач</th>
+            <th>Дата</th>
+            <th>Статус</th>
+          </tr>
+        </thead>
+        <tbody id="visitsTable">
+          {% for visit in recent_visits %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ visit.patient.first_name }} {{ visit.patient.last_name }}</td>
+            <td>{{ visit.doctor }}</td>
+            <td>{{ visit.visit_datetime|date:"d.m.Y" }}</td>
+            <td>
+              {% if visit.status == "ended" %}
+                <span class="badge bg-success">Завершен</span>
+              {% elif visit.status == "in_progress" %}
+                <span class="badge bg-warning text-dark">В процессе</span>
+              {% else %}
+                <span class="badge bg-secondary">Ожидает</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="5" class="text-center text-muted py-3">Нет данных</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- JS: Jadvalni avtomatik yangilash -->
+<script>
+document.getElementById('refreshData').addEventListener('click', async () => {
+  const btn = document.getElementById('refreshData');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Загружается...';
+  try {
+    const res = await fetch('{% url "latest_visits_api" %}');
+    const data = await res.json(); // bu yerda data.visits mavjud
+    const tbody = document.getElementById('visitsTable');
+    tbody.innerHTML = '';
+
+    data.visits.forEach((v, i) => {
+      let statusBadge = '';
+      if (v.status === 'ended') {
+        statusBadge = '<span class="badge bg-success">Завершен</span>';
+      } else if (v.status === 'in_progress') {
+        statusBadge = '<span class="badge bg-warning text-dark">В процессе</span>';
+      } else {
+        statusBadge = '<span class="badge bg-secondary">Ожидает</span>';
+      }
+
+      tbody.innerHTML += `
+        <tr>
+          <td>${i + 1}</td>
+          <td>${v.patient}</td>
+          <td>${v.doctor}</td>
+          <td>${v.datetime}</td>
+          <td>${statusBadge}</td>
+        </tr>`;
+    });
+
+  } catch (e) {
+    alert("Ошибка при загрузке данных!");
+    console.error(e);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="bi bi-arrow-repeat"></i> Обновить';
+  }
+});
+
+
+</script>
+{% endblock %}

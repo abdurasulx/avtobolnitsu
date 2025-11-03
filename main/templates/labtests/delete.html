@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Удаление анализа</h2>
+<p>Вы действительно хотите удалить анализ "{{ object.test_type }}"?</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn" style="background-color: #dc3545;">Удалить</button>
+    <a href="{% url 'labtest_list' %}" class="btn">Отмена</a>
+</form>
+{% endblock %}

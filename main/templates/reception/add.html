@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+  <h4 class="mb-3 fw-bold text-primary">Добавление нового сотрудника ресепшена</h4>
+  
+  {% if errors %}
+    <div class="alert alert-danger">
+      <ul>
+        {% for error in errors %}
+          <li>{{ error }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+  
+  <form method="post">
+    {% csrf_token %}
+    
+    <div class="mb-3">
+      <label class="form-label">Имя (обязательно):</label>
+      <input type="text" class="form-control" name="first_name" value="{{ first_name|default:'' }}" required>
+    </div>
+    
+    <div class="mb-3">
+      <label class="form-label">Фамилия (обязательно):</label>
+      <input type="text" class="form-control" name="last_name" value="{{ last_name|default:'' }}" required>
+    </div>
+    
+    <div class="mb-3">
+      <label class="form-label">Логин (обязательно):</label>
+      <input type="text" class="form-control" name="username" value="{{ username|default:'' }}" required>
+    </div>
+    
+    <div class="mb-3">
+      <label class="form-label">Электронная почта (необязательно):</label>
+      <input type="email" class="form-control" name="email" value="{{ email|default:'' }}">
+    </div>
+    
+    <div class="mb-3">
+      <label class="form-label">Пароль (обязательно, минимум 8 символов):</label>
+      <input type="password" class="form-control" name="password" required>
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Сохранить</button>
+  </form>
+</div>
+{% endblock %}

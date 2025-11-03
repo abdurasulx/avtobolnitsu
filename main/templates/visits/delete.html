@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Удаление приема</h2>
+<p>Вы действительно хотите удалить этот прием? (ID: {{ object.id }})</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn" style="background-color: #dc3545;">Удалить</button>
+    <a href="{% url 'visit_list' %}" class="btn">Отмена</a>
+</form>
+{% endblock %}

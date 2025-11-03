@@ -1,0 +1,42 @@
+{% extends 'patients/base.html' %}
+{% block title %}Главная — Пациент{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3 class="fw-bold text-primary mb-4">💊 Ваши текущие препараты</h3>
+
+    {% if medicines %}
+        <div class="row">
+            {% for pm in medicines %}
+                <div class="col-md-4 mb-3">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title text-success">{{ pm.medicine.name }}</h5>
+                            <p class="card-text text-muted mb-1">
+                                <strong>Количество:</strong> {{ pm.quantity }}
+                            </p>
+                            <p class="card-text text-muted mb-1">
+                                <strong>Дата назначения:</strong> {{ pm.prescribed_date|date:"d.m.Y" }}
+                            </p>
+                            {% if pm.medicine.description %}
+                                <p class="small text-secondary">{{ pm.medicine.description }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="card-footer bg-transparent border-0 text-end">
+                            {% if pm.doctor %}
+                                <span class="badge bg-primary">
+                                    Назначил: {{ pm.doctor.user.get_full_name }}
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center mt-5">
+            <h5 class="text-muted">🩺 На данный момент вы не проходите лечение.</h5>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

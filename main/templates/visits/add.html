@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Добавление нового приема</h2>
+<form method="post" id="visitForm">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Сохранить</button>
+    <a href="{% url 'visit_list' %}" class="btn">Отмена</a>
+</form>
+{% endblock %}

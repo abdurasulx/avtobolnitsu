@@ -1,0 +1,104 @@
+{% extends 'reception/base.html' %}
+
+{% block title %}Профиль{% endblock %}
+
+{% block header %}Профиль{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8 col-md-10">
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <h4 class="mb-3 text-primary fw-semibold">👤 Личные данные</h4>
+          <hr>
+
+          <!-- Профильные данные -->
+          <div class="row mb-3">
+            <div class="col-sm-4 fw-semibold">Имя:</div>
+            <div class="col-sm-8">{{ request.user.first_name }}</div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-sm-4 fw-semibold">Фамилия:</div>
+            <div class="col-sm-8">{{ request.user.last_name }}</div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-sm-4 fw-semibold">Email:</div>
+            <div class="col-sm-8">{{ request.user.email|default:"—" }}</div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-sm-4 fw-semibold">Username (login):</div>
+            <div class="col-sm-8">{{ request.user.username }}</div>
+          </div>
+
+          <div class="row mb-4">
+            <div class="col-sm-4 fw-semibold">Дата регистрации:</div>
+            <div class="col-sm-8">{{ request.user.date_joined|date:"d.m.Y H:i" }}</div>
+          </div>
+
+          <div class="text-end">
+            <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+              🔒 Изменить пароль
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Изменить пароль модальное окно -->
+<div class="modal fade" id="changePasswordModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <form method="post" action="{% url 'reception_change_password' %}">
+        {% csrf_token %}
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title">🔑 Изменить пароль</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Текущий пароль</label>
+            <input type="password" name="old_password" class="form-control" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Новый пароль</label>
+            <input type="password" name="new_password1" class="form-control" required minlength="6">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Новый пароль (повторно)</label>
+            <input type="password" name="new_password2" class="form-control" required minlength="6">
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Сохранить</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<style>
+  .card {
+    border-radius: 10px;
+  }
+
+  @media (max-width: 576px) {
+    .card-body {
+      padding: 15px;
+    }
+    .fw-semibold {
+      font-size: 0.95rem;
+    }
+  }
+</style>
+{% endblock %}

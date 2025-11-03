@@ -1,0 +1,396 @@
+{% load static %}
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title> Югорская городская больница</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Inline CSS (Google Health / MedCare uslubi, oq & ko'k ranglar) -->
+  <style>
+    :root{
+      --brand-blue: #0b6efd; /* primary */
+      --brand-blue-600: #0a58ca;
+      --muted: #6c757d;
+      --card-radius: 14px;
+      --glass: rgba(255,255,255,0.85);
+    }
+    body{
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg, #f8fbff 0%, #ffffff 60%);
+      color: #1f2937;
+    }
+    .navbar{
+      background: var(--glass);
+      backdrop-filter: blur(6px);
+    }
+    .brand {
+      font-weight: 700;
+      color: var(--brand-blue);
+      font-size: 1.15rem;
+      letter-spacing: .2px;
+    }
+
+    /* Hero */
+    .hero {
+      padding: 5.5rem 0 4rem;
+      background:
+        linear-gradient(180deg, rgba(11,110,253,0.06), rgba(11,110,253,0.02));
+    }
+    .hero .lead {
+      color: #334155;
+    }
+    .hero-ill {
+      background: url("{% static 'images/hero.jpg' %}") center/cover no-repeat;
+      min-height: 280px;
+      border-radius: 12px;
+      box-shadow: 0 8px 30px rgba(11,110,253,0.06);
+    }
+
+    /* Cards */
+    .doctor-card img {
+      height: 220px;
+      object-fit: cover;
+      border-top-left-radius: 12px;
+      border-top-right-radius: 12px;
+    }
+    .doctor-card .card-body {
+      padding: 1rem;
+    }
+    .card-custom {
+      border-radius: var(--card-radius);
+      box-shadow: 0 6px 20px rgba(16,24,40,0.06);
+      border: 0;
+    }
+
+    /* Visits table */
+    .table thead th {
+      border-bottom: 0;
+    }
+    .badge-inprogress { background: #fff3cd; color: #856404; }
+    .badge-ended { background: #d1e7dd; color: #0f5132; }
+
+    /* Appointment form */
+    .appointment {
+      border-radius: 12px;
+      box-shadow: 0 6px 30px rgba(2,6,23,0.04);
+      background: white;
+      padding: 1.25rem;
+    }
+
+    footer {
+      background: linear-gradient(0deg, rgba(11,110,253,0.04), transparent);
+      padding: 2rem 0;
+      margin-top: 2rem;
+    }
+
+    /* Responsive tweaks */
+    @media (max-width: 767.98px){
+      .hero { padding: 3.5rem 0 2rem; }
+      .doctor-card img { height: 180px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg py-3 sticky-top">
+    <div class="container">
+      <a class="navbar-brand brand" href="#">🏥 Югорская городская больница</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navMain">
+        <ul class="navbar-nav ms-auto align-items-lg-center">
+          
+          <li class="nav-item"><a class="nav-link" href="#about">О нас</a></li>
+          <li class="nav-item"><a class="nav-link" href="#doctors">Врачи</a></li>
+          <li class="nav-item"><a class="nav-link" href="#visits">Сегодняшние визиты</a></li>
+          <li class="nav-item"><a class="nav-link " href="#appointment">Записаться на прием</a></li>
+          <li>  <a href="{% url 'login' %}" class="btn btn-outline-primary">Login</a> </li>
+
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container">
+      <div class="row align-items-center g-4">
+        <div class="col-lg-6">
+          <h1 class="display-6 fw-bold">Доверьте свое здоровье профессионалам</h1>
+          <p class="lead my-3">Современная диагностика, квалифицированные врачи и удобное обслуживание пациентов — все в одном месте. Быстрая и простая регистрация или запись на прием.</p>
+          <div class="d-flex gap-2">
+            <a href="#appointment" class="btn btn-primary btn-lg">Записаться на прием</a>
+            <a href="#doctors" class="btn btn-outline-primary btn-lg">Посмотреть врачей</a>
+          </div>
+          <ul class="list-unstyled mt-4 text-muted small">
+            <li>📍 улица Попова, 29/1, Югорск, Ханты-Мансийский автономный округ, Россия, 628260</li>
+            <li>⏰ Время работы: Понедельник—Воскресенье, 08:00—22:00</li>
+            <li>📞 +7 346 752-11-12</li>
+          </ul>
+        </div>
+        <div class="col-lg-6">
+          <div class="hero-ill card-custom"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about" class="py-5">
+    <div class="container">
+      <div class="row g-4 align-items-center">
+        <div class="col-md-7">
+          <div class="card card-custom p-4">
+            <h3 class="mb-2">О нас</h3>
+            <p class="text-muted mb-3">Югорская городская больницапредлагает всесторонние услуги по диагностике и лечению. У нас есть квалифицированные врачи, современное оборудование и удобная система обслуживания пациентов.</p>
+            <div class="row text-center">
+              <div class="col-4">
+                <h5 class="mb-0">24/7</h5>
+                <small class="text-muted">Прием</small>
+              </div>
+              <div class="col-4">
+                <h5 class="mb-0">+50</h5>
+                <small class="text-muted">Специалистов</small>
+              </div>
+              <div class="col-4">
+                <h5 class="mb-0">Безопасно</h5>
+                <small class="text-muted">Сертифицировано</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick actions -->
+        <div class="col-md-5">
+          <div class="card card-custom p-3 appointment">
+            <h5 class="mb-3">Быстрые услуги</h5>
+            <div class="d-grid gap-2">
+              <a href="#appointment" class="btn btn-outline-primary" style="color: black; ">Записаться на прием</a>
+              <a href="#doctors" class="btn btn-outline-primary">Список врачей</a>
+              <a href="#" class="btn btn-outline-primary">Контакты и маршрут</a>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DOCTORS -->
+  <section id="doctors" class="py-5 bg-light">
+    <div class="container">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="mb-0">Наши специалисты</h3>
+        <p class="text-muted small mb-0">Квалифицированные врачи — наилучший уход для вашего пациента</p>
+      </div>
+
+      <div class="row g-4">
+        {% for doctor in doctors %}
+        <div class="col-sm-6 col-md-4 col-lg-3">
+          <div class="card card-custom doctor-card h-100">
+            {% if doctor.img %}
+            <img src="{{ doctor.img.url }}" class="card-img-top" alt="{{ doctor.user.get_full_name }}">
+            {% else %}
+            <img src="{% static 'images/doctor-placeholder.jpg' %}" class="card-img-top" alt="doctor">
+            {% endif %}
+            <div class="card-body">
+              <h5 class="card-title mb-1">{{ doctor.user.get_full_name }}</h5>
+              <p class="text-primary small mb-2">{{ doctor.specialty }}</p>
+              <p class="text-muted small mb-3">{{ doctor.detail|default:"Краткая информация о опыте и квалификации."|truncatechars:80 }}</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <small class="text-muted">Отделение: {% if doctor.department %}
+    {{ doctor.department.name }}
+  {% else %}
+    -
+  {% endif %}</small>
+                <a href="#appointment" class="btn btn-sm btn-primary">Записаться на прием</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+          <div class="card card-custom p-4 text-center">
+            <p class="mb-0 text-muted">Пока список врачей недоступен.</p>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <!-- VISITS -->
+  <section id="visits" class="py-5">
+    <div class="container">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0">Сегодняшние визиты</h3>
+        <small class="text-muted">Дата: {{ timezone.now|date:"d.m.Y" }}</small>
+      </div>
+
+      <div class="card card-custom p-3">
+        <div class="table-responsive">
+          <table class="table align-middle mb-0">
+            <thead class="bg-white">
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Пациент</th>
+                <th scope="col">Врач</th>
+                <th scope="col">Время</th>
+                <th scope="col">Статус</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% if visits %}
+                {% for visit in visits %}
+                <tr>
+                  <td>{{ forloop.counter }}</td>
+                  <td>{{ visit.patient.first_name }} {{ visit.patient.last_name }}</td>
+                  <td>{% if visit.doctor %}
+  {{ visit.doctor.user.get_full_name }}
+{% else %}
+  —
+{% endif %}
+</td>
+                  <td>{{ visit.visit_datetime|time:"H:i" }}</td>
+                  <td>
+                    {% if visit.status == 'in_progress' %}
+                      <span class="badge badge-inprogress px-2 py-1 rounded">В процессе</span>
+                    {% else %}
+                      <span class="badge badge-ended px-2 py-1 rounded">Завершен</span>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% endfor %}
+              {% else %}
+                <tr>
+                  <td colspan="5" class="text-center text-muted py-4">Сегодня визитов не запланировано.</td>
+                </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- APPOINTMENT FORM -->
+  <section id="appointment" class="py-5 bg-light">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-7">
+          <div class="appointment card-custom p-4">
+            <h4 class="mb-3">Записаться на прием</h4>
+            <p class="text-muted small">Вы можете записаться на прием без регистрации. Мы свяжемся с вами.</p>
+
+            <form id="visitForm" method="POST" action="{% url 'create_visit' %}">
+              {% csrf_token %}
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label small">Имя</label>
+                  <input name="first_name" type="text" class="form-control" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label small">Фамилия</label>
+                  <input name="last_name" type="text" class="form-control" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label small">Телефон</label>
+                  <input name="phone" type="tel" class="form-control" placeholder="+7495-539-55-19" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label small">Врач (необязательно)</label>
+                  <select name="doctor" class="form-select">
+                    <option value="" selected>Любой</option>
+                    {% for doctor in doctors %}
+                      <option value="{{ doctor.id }}">{{ doctor.user.get_full_name }} — {{ doctor.specialty }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+
+                <div class="col-12">
+                  <label class="form-label small">Краткое описание проблемы (необязательно)</label>
+                  <textarea name="diagnosis" class="form-control" rows="2" placeholder="Опишите симптомы..."></textarea>
+                </div>
+
+                <div class="col-12 d-grid">
+                  <button type="submit" class="btn btn-primary btn-lg">Отправить запись</button>
+                </div>
+              </div>
+            </form>
+
+            <div id="formAlert" class="mt-3 d-none">
+              <div class="alert alert-success mb-0">Спасибо! Запись создана. Мы скоро свяжемся.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="text-center">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-md-8 text-md-start">
+          <p class="mb-0">&copy; {{ timezone.now|date:"Y" }} ШИФО КЛИНИКА. Все права защищены.</p>
+          <small class="text-muted">Адрес: Ташкент, ул. Мисол, 12 — +998 (90) 123-45-67</small>
+        </div>
+        <div class="col-md-4 text-md-end">
+          <a class="btn btn-sm btn-outline-primary me-2" href="#">Контакт</a>
+          <a class="btn btn-sm btn-outline-primary" href="#">Услуги</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Inline JS -->
+  <script>
+    (function(){
+      const form = document.getElementById('visitForm');
+      const formAlert = document.getElementById('formAlert');
+
+      // Client-side simple validation / UX
+      form.addEventListener('submit', function(e){
+        // allow normal POST to backend (Django) to create visit.
+        // But provide nicer UX: show temporary success and disable button to avoid double-submit.
+        const btn = form.querySelector('button[type="submit"]');
+        btn.disabled = true;
+        btn.innerHTML = 'Отправляется...';
+
+        // Let the browser submit — but show success after a short delay only if form posts via fetch isn't used.
+        // If backend redirects, this won't run; the UX below is best-effort for progressive enhancement.
+        setTimeout(function(){
+          // If page still present (no redirect), show alert and re-enable
+          if (document.body.contains(form)) {
+            formAlert.classList.remove('d-none');
+            btn.disabled = false;
+            btn.innerHTML = 'Отправить запись';
+            form.reset();
+          }
+        }, 1200);
+      });
+
+      // smooth scroll for anchor links
+      document.querySelectorAll('a[href^="#"]').forEach(function(a){
+        a.addEventListener('click', function(e){
+          const target = document.querySelector(this.getAttribute('href'));
+          if (target) {
+            e.preventDefault();
+            target.scrollIntoView({behavior:'smooth', block:'start'});
+          }
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

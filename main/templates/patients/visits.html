@@ -1,0 +1,38 @@
+{% extends 'patients/base.html' %}
+{% block title %}Мои посещения{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h4 class="mb-4">🩺 История посещений</h4>
+
+  {% if visits %}
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead class="table-light">
+          <tr>
+            <th scope="col">Дата</th>
+            <th scope="col">Врач</th>
+            <th scope="col">Отделение</th>
+         
+           
+          </tr>
+        </thead>
+        <tbody>
+          {% for v in visits %}
+          <tr>
+            <td>{{ v.visit_datetime|date:"d.m.Y H:i" }}</td>
+            <td>{{ v.doctor.user.get_full_name }}</td>
+            <td>{{ v.doctor.department.name }}</td>
+           
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="alert alert-info text-center mt-5">
+      <h6>Вы пока не посещали врачей.</h6>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

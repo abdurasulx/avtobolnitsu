@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Список рецептов пациентов</h2>
+<a href="{% url 'patientmedicine_add' %}" class="btn">Новый рецепт</a>
+<a href="{{ export_url }}" class="btn">Экспорт CSV</a>
+<table>
+    <thead>
+        <tr><th>ID</th><th>Пациент</th><th>Лекарство</th><th>Количество</th><th>Дата</th><th>Действия</th></tr>
+    </thead>
+    <tbody>
+        {% for pm in patient_medicines %}
+        <tr>
+            <td>{{ pm.id }}</td>
+            <td>{{ pm.patient }}</td>
+            <td>{{ pm.medicine.name }}</td>
+            <td>{{ pm.quantity }}</td>
+            <td>{{ pm.prescribed_date|date:"d.m.Y" }}</td>
+            <td>
+                <a href="{% url 'patientmedicine_edit' pm.pk %}">Редактировать</a>
+                <a href="{% url 'patientmedicine_delete' pm.pk %}" onclick="return confirm('Удалить?')">Удалить</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6">Ни одного рецепта не найдено.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

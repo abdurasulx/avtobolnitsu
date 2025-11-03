@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2>{{ patient.first_name }} {{ patient.last_name }}</h2>
+  <p><strong>Телефон:</strong> {{ patient.phone }}</p>
+  <p><strong>Дата рождения:</strong> {{ patient.birth_date }}</p>
+  <p><strong>Адрес:</strong> {{ patient.address }}</p>
+
+  <hr>
+  <h4>История посещений</h4>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Дата визита</th>
+        <th>Врач</th>
+        <th>Диагноз</th>
+        <th>Статус</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for v in visits %}
+        <tr>
+          <td>{{ v.visit_datetime|date:"d.m.Y H:i" }}</td>
+          <td>{{ v.doctor.user.get_full_name }}</td>
+          <td>{{ v.diagnosis }}</td>
+          <td>{{ v.get_status_display }}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="4" class="text-center">Посещений нет</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

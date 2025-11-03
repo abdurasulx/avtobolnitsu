@@ -1,0 +1,190 @@
+{% extends 'dbase.html' %}
+{% load static %}
+{% block content %}
+<div class="container-fluid mt-4 px-3 px-md-4">
+  {% comment %} <!-- Doctor Profile Card -->
+  <div class="card shadow-sm rounded-3 mb-4">
+    <div class="card-body p-4">
+      <div class="d-flex align-items-center flex-wrap gap-3">
+        {% if doctor.img %}
+          <img src="{{ doctor.img.url }}" class="rounded-circle" width="80" height="80" style="flex-shrink: 0;">
+        {% endif %}
+        <div class="flex-grow-1 min-width-0">
+          <h3 class="mb-1 fw-bold">{{ doctor.user.get_full_name }}</h3>
+          <p class="text-muted mb-1">{{ doctor.specialty }}</p>
+          <small class="text-secondary">Отделение: {{ doctor.department }}</small>
+        </div>
+      </div>
+    </div>
+  </div> {% endcomment %}
+
+  <!-- Key Metrics Cards (Rounded Rectangles) -->
+  <div class="row g-3 g-md-4 mb-4">
+    <!-- Today's Visits -->
+    <div class="col-12 col-md-6 col-lg-3">
+      <div class="card shadow-sm rounded-3 h-100 text-center bg-light">
+        <div class="card-body py-4">
+          <h5 class="card-title text-primary mb-2">Сегодняшние визиты</h5>
+          <h3 class="fw-bold text-dark mb-1">{{ todays_visits_count|default:0 }}</h3>
+          <small class="text-muted">Количество пациентов</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Last 7 Days Statistics -->
+    <div class="col-12 col-md-6 col-lg-3">
+      <div class="card shadow-sm rounded-3 h-100 text-center bg-light">
+        <div class="card-body py-4">
+          <h5 class="card-title text-success mb-2">Последние 7 дней</h5>
+          <h3 class="fw-bold text-dark mb-1">{{ weekly_visits|default:0 }}</h3>
+          <small class="text-muted">Количество визитов</small>
+          <!-- Simple bar for visualization; extend with Chart.js if needed -->
+          <div class="progress mt-2 mx-auto" style="width: 80%; height: 8px;">
+            <div class="progress-bar bg-success" style="width: {{ weekly_visits_percentage|default:0 }}%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Patients -->
+    <div class="col-12 col-md-6 col-lg-3">
+      <div class="card shadow-sm rounded-3 h-100 text-center bg-light">
+        <div class="card-body py-4">
+          <h5 class="card-title text-info mb-2">Активные пациенты</h5>
+          <h3 class="fw-bold text-dark mb-1">{{ active_patients_count|default:0 }}</h3>
+          <small class="text-muted">Текущая ситуация</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Last Results -->
+    <div class="col-12 col-md-6 col-lg-3">
+      <div class="card shadow-sm rounded-3 h-100 text-center bg-light">
+        <div class="card-body py-4">
+          <h5 class="card-title text-warning mb-2">Последние результаты</h5>
+          <h3 class="fw-bold text-dark mb-1">{{ last_results_count|default:0 }}</h3>
+          <small class="text-muted">Диагностика и лечение</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Visits Table -->
+  <div class="card shadow-sm rounded-3 mb-4 overflow-hidden">
+    <div class="card-header bg-primary text-white py-3">
+      <h4 class="mb-0">Последние приёмы</h4>
+    </div>
+    <div class="card-body p-0">
+      {% if recent_visits %}
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead class="table-light">
+              <tr>
+                <th class="px-3 py-3">Пациент</th>
+                <th class="px-3 py-3 d-none d-md-table-cell">Дата</th>
+                <th class="px-3 py-3 d-none d-lg-table-cell">Диагноз</th>
+                <th class="px-3 py-3 d-none d-lg-table-cell">Статус</th>
+                <th class="px-3 py-3">Результат</th>
+                <th class="px-3 py-3">Действия</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for visit in recent_visits %}
+              <tr class="align-middle">
+                <td class="px-3 py-3 fw-medium">{{ visit.patient }}</td>
+                <td class="px-3 py-3 text-muted small d-none d-md-table-cell">{{ visit.visit_datetime|date:"d.m.Y H:i" }}</td>
+                <td class="px-3 py-3 text-muted small d-none d-lg-table-cell">{{ visit.diagnosis|truncatechars:40 }}</td>
+                <td class="px-3 py-3 d-none d-lg-table-cell">
+                  <span class="badge {% if visit.status == 'in_progress' %}bg-warning{% elif visit.status == 'ended' %}bg-success{% endif %}">
+                    {{ visit.get_status_display }}
+                  </span>
+                </td>
+                <td class="px-3 py-3">
+                  <span class="badge {% if visit.result == 'hospital' %}bg-danger{% elif visit.result == 'home' %}bg-success{% elif visit.result == 'none' %}bg-secondary{% else %}bg-warning{% endif %}">
+                    {{ visit.get_result_display }}
+                  </span>
+                </td>
+                <td class="px-3 py-3">
+                  <a href="{% url 'visit_list' %}{{ visit.id}}/edit" class="btn btn-sm btn-outline-primary">Просмотр</a>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="text-center py-5 text-muted">
+          <p class="mb-0">Пока нет приёмов.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Today's Scheduled Appointments -->
+  <div class="card shadow-sm rounded-3 mb-4">
+    <div class="card-header bg-info text-white py-3">
+      <h4 class="mb-0">Запланированные на сегодня встречи</h4>
+    </div>
+    <div class="card-body p-0">
+      {% if scheduled_appointments %}
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead class="table-light">
+              <tr>
+                <th class="px-3 py-3">Пациент</th>
+                <th class="px-3 py-3 d-none d-md-table-cell">Время</th>
+                <th class="px-3 py-3 d-none d-lg-table-cell">Статус</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for appointment in scheduled_appointments %}
+              <tr class="align-middle">
+                <td class="px-3 py-3 fw-medium">{{ appointment.patient }}</td>
+                <td class="px-3 py-3 text-muted small d-none d-md-table-cell">{{ appointment.visit_datetime|date:"H:i" }}</td>
+                <td class="px-3 py-3 d-none d-lg-table-cell">
+                  <span class="badge bg-info">{{ appointment.get_status_display }}</span>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="text-center py-5 text-muted">
+          <p class="mb-0">На сегодня встреч не запланировано.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Weekly Summary -->
+  <div class="mt-4 text-center">
+    <p class="mb-0">За последнюю неделю приёмов: <strong>{{ weekly_visits|default:0 }}</strong></p>
+  </div>
+</div>
+
+<style>
+/* Additional Responsive Styles */
+@media (max-width: 768px) {
+  .container-fluid {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  .card {
+    margin-bottom: 1rem;
+  }
+  .table th, .table td {
+    padding: 0.75rem !important;
+    font-size: 0.875rem;
+  }
+}
+
+/* Smooth animations */
+.card {
+  transition: transform 0.2s ease-in-out;
+}
+.card:hover {
+  transform: translateY(-2px);
+}
+</style>
+{% endblock %}

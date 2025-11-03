@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="fw-bold text-primary">Персонал на рецепции</h3>
+    <a href="{% url 'add_reception' %}" class="btn btn-success btn-sm">
+      <i class="bi bi-person-plus"></i> Новый сотрудник
+    </a>
+  </div>
+
+  <table class="table table-striped table-hover">
+    <thead class="table-primary">
+      <tr>
+        <th>#</th>
+<th>Полное имя</th>
+<th>Телефон</th>
+<th>Адрес</th>
+<th>Вход</th>
+<th>Действия</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in receptions %}
+      <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ r.user.get_full_name }}</td>
+        <td>{{ r.phone }}</td>
+        <td>{{ r.address }}</td>
+        <td>{{ r.user.username }}</td>
+        <td>
+          <a href="{% url 'delete_reception' r.id %}" 
+             class="btn btn-danger btn-sm"
+             onclick="return confirm('Aniq o‘chirmoqchimisiz?');">
+             <i class="bi bi-trash"></i> Удалить
+          </a>
+            <a href="{% url 'reception_edit' r.id %}" class="btn btn-primary btn-sm">
+                <i class="bi bi-pencil"></i> Редактировать
+            </a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6" class="text-center text-muted">Сотрудники не найдены</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

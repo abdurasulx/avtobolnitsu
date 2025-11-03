@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Пациент: {{ patient.first_name }} {{ patient.last_name }}</h2>
+<p>Телефон: {{ patient.phone }}</p>
+<p>Адрес: {{ patient.address }}</p>
+
+<h3>История приемов</h3>
+<table>
+    {% for visit in visits %}
+    <tr><td>{{ visit.datetime|date:"d.m.Y H:i" }} - {{ visit.diagnosis|truncatewords:10 }}</td></tr>
+    {% endfor %}
+</table>
+
+<h3>Анализы</h3>
+<table>
+    {% for test in tests %}
+    <tr><td>{{ test.test_type }} ({{ test.result_date }}): {{ test.result|truncatewords:10 }}</td></tr>
+    {% endfor %}
+</table>
+
+<h3>Лекарства</h3>
+<table>
+    {% for med in meds %}
+    <tr><td>{{ med.medicine.name }} - {{ med.quantity }} шт. ({{ med.prescribed_date }})</td></tr>
+    {% endfor %}
+</table>
+{% endblock %}

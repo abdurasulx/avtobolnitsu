@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Список пациентов</h2>
+<a href="{% url 'patient_add' %}" class="btn">Новый пациент</a>
+<a href="{{ export_url }}" class="btn">Экспорт CSV</a>
+<table>
+    <thead>
+        <tr><th>ID</th><th>Имя</th><th>Фамилия</th><th>Телефон</th><th>Дата</th> <th>Логин</th> <th>Парол </th><th>Действия</th></tr>
+    </thead>
+    <tbody>
+        {% for patient in patients %}
+        <tr>
+            <td>{{ patient.id }}</td>
+            <td>{{ patient.first_name }}</td>
+            <td>{{ patient.last_name }}</td>
+            <td>{{ patient.phone }}</td>
+            <td>{{ patient.created_at|date:"d.m.Y" }}</td>
+            <td>{{ patient.user.username }}</td>
+            <td>{{ patient.user.plain_password }}</td>
+            <td>
+                <a href="{% url 'patient_detail' patient.pk %}">Просмотр</a>
+                <a href="{% url 'patient_edit' patient.pk %}">Редактировать</a>
+                <a href="{% url 'patient_delete' patient.pk %}" onclick="return confirm('Удалить?')">Удалить</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
