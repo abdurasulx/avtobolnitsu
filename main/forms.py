@@ -281,3 +281,25 @@ class ReceptionEditForm(forms.ModelForm):
             user.save()
             reception.save()
         return reception
+class DepartmentForm(forms.ModelForm):
+    
+    class Meta:
+  
+        model = Department
+
+        fields = ['name', 'description']
+        labels = {
+            'name': 'Название отдела',
+            'description': 'Описание',     
+        }
+     
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'class': 'form-control', 
+                'placeholder': 'Название отдела'  
+            }),
+            'description': forms.Textarea(attrs={
+                'class': 'form-control', 
+                'placeholder': 'Описание' 
+            }),
+        }

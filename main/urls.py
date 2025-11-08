@@ -79,4 +79,8 @@ urlpatterns = [
     path('receptions/<int:pk>/edit/', views.edit_reception, name='reception_edit'),
     path('receptions/<int:pk>/delete/', views.delete_reception, name='delete_reception'),
 
+    #Department
+    path('department/add',views.department_create,name='add_department'),
+    path('api/department/add/',views.department_add,name='add_department_api')
+
 ]

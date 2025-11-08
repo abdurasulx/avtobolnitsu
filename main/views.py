@@ -11,7 +11,7 @@ from django.http import HttpResponse, JsonResponse
 from django.utils import timezone
 from django.db.models import Q
 from .models import Patient, Doctor, Visit, LabTest, Medicine, PatientMedicine, Department, Reception
-from .forms import PatientForm, DoctorForm, VisitForm, LabTestForm, MedicineForm, PatientMedicineForm, SignUpForm , SetPPasswordForm, ReceptionForm
+from .forms import PatientForm, DoctorForm, VisitForm, LabTestForm, MedicineForm, PatientMedicineForm, SignUpForm , SetPPasswordForm, ReceptionForm, DepartmentForm
 from django.contrib.auth.forms import SetPasswordForm
 import logging
 from django.urls import reverse_lazy , reverse
@@ -1113,3 +1113,60 @@ def edit_reception(request, pk):
     return render(request, 'reception/edit.html', {'form': form, 'reception': reception})
 
 
+from django.template.loader import render_to_string
+
+def department_list(request):
+    departments = Department.objects.all()
+    return render(request, 'department/department_list.html', {'departments': departments})
+
+def save_department_form(request, form, template_name):
+    data = {}
+    if request.method == 'POST':
+        if form.is_valid():
+            form.save()
+            data['form_is_valid'] = True
+            departments = Department.objects.all()
+            data['html_department_list'] = render_to_string('department/includes/partial_department_list.html', {
+                'departments': departments
+            })
+        else:
+            data['form_is_valid'] = False
+    context = {'form': form}
+    data['html_form'] = render_to_string(template_name, context, request=request)
+    return JsonResponse(data)
+
+def department_create(request):
+    if request.method == 'POST':
+        form = DepartmentForm(request.POST)
+    else:
+        form = DepartmentForm()
+    return render(request,'department/add.html',{'form':form})
+def department_add(request):
+    if request.method=="POST":
+        form=DepartmentForm(request.POST)
+        if form.is_valid:
+            form.save()
+    return redirect('doctor_add')
+
+def department_update(request, pk):
+    department = get_object_or_404(Department, pk=pk)
+    if request.method == 'POST':
+        form = DepartmentForm(request.POST, instance=department)
+    else:
+        form = DepartmentForm(instance=department)
+    return save_department_form(request, form, 'department/includes/partial_department_update.html')
+
+def department_delete(request, pk):
+    department = get_object_or_404(Department, pk=pk)
+    data = {}
+    if request.method == 'POST':
+        department.delete()
+        data['form_is_valid'] = True
+        departments = Department.objects.all()
+        data['html_department_list'] = render_to_string('department/includes/partial_department_list.html', {
+            'departments': departments
+        })
+    else:
+        context = {'department': department}
+        data['html_form'] = render_to_string('department/includes/partial_department_delete.html', context, request=request)
+    return JsonResponse(data)

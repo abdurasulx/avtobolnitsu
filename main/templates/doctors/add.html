@@ -40,4 +40,25 @@
     <a href="{% url 'doctor_list' %}" class="btn btn-secondary">Отмена</a>
   </form>
 </div>
+
+<script>
+
+  const addUrl = "{% url 'add_department' %}";
+  
+  const selectElement = document.querySelector('.form-select');
+  
+  
+  const addDepartmentOption = new Option("Добавить отдел", addUrl);
+  selectElement.add(addDepartmentOption);
+
+  selectElement.addEventListener('change', function() {
+    const selectedValue = this.value;
+
+
+    if (selectedValue) {
+      
+      window.location.href = selectedValue;
+    }
+  });
+</script>
 {% endblock %}
