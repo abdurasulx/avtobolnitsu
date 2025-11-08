@@ -152,10 +152,7 @@ def dashboard(request):
             'active_doctors': active_doctors,
         }
 
-        logger.info(
-            f"Admin {request.user} accessed dashboard. "
-            f"Daily visits: {daily_visits}, New patients: {new_patients_today}"
-        )
+        logger.info( f"Админ {request.user} получил доступ к панели управления. " f"Ежедневные посещения: {daily_visits}, Новые пациенты: {new_patients_today}" )
 
         return render(request, 'dashboard.html', context)
 def redashboard(request):
@@ -184,13 +181,13 @@ def patient_detail(request, pk):
     # Permission check
     if not request.user.is_superuser and hasattr(request.user, 'doctor'):
         if not Visit.objects.filter(patient=patient, doctor=request.user.doctor).exists():
-            messages.error(request, "Ruxsatingiz yo'q.")
+            messages.error(request, "У вас нет разрешения (доступа).")
             return redirect('patient_list')
     visits = Visit.objects.filter(patient=patient)
     tests = LabTest.objects.filter(patient=patient)
     meds = PatientMedicine.objects.filter(patient=patient)
     context = {'patient': patient, 'visits': visits, 'tests': tests, 'meds': meds}
-    logger.info(f"User {request.user} viewed patient {patient.id}")
+    logger.info(f"Пользователь {request.user} просмотрел пациента {patient.id}")
     return render(request, 'patients/detail.html', context)
 
 class PatientCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
@@ -203,7 +200,7 @@ class PatientCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         return self.request.user.is_superuser or is_nurse(self.request.user)
 
     def form_valid(self, form):
-        logger.info(f"User {self.request.user} created patient {form.instance.first_name}")
+        logger.info(f"Пользователь {self.request.user} создал пациента {form.instance.first_name}")
         return super().form_valid(form)
 
 class PatientUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -216,7 +213,7 @@ class PatientUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return self.request.user.is_superuser or is_nurse(self.request.user)
 
     def form_valid(self, form):
-        logger.info(f"User {self.request.user} updated patient {form.instance.id}")
+        logger.info(f"Пользователь {self.request.user} обновил пациента {form.instance.id}")
         return super().form_valid(form)
 
 class PatientDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
@@ -235,10 +232,10 @@ def export_patients_csv(request):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="patients.csv"'
     writer = csv.writer(response)
-    writer.writerow(['ID', 'Ism', 'Familiya', 'Tug\'ilgan sana', 'Jins', 'Telefon'])
+    writer.writerow(['ID', 'Имя', 'Фамилия', 'Дата рождения', 'Пол', 'Телефон'])
     for patient in Patient.objects.all():
         writer.writerow([patient.id, patient.first_name, patient.last_name, patient.birth_date, patient.gender, patient.phone])
-    logger.info(f"User {request.user} exported patients CSV")
+    logger.info(f"Пользователь {request.user} экспортировал CSV-файл пациентов")
     return response
 
 # Doctors
@@ -352,7 +349,7 @@ def export_doctors_csv(request):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="doctors.csv"'
     writer = csv.writer(response)
-    writer.writerow(['ID', 'User', 'Bo\'lim', 'Mutaxassislik'])
+    writer.writerow(['ID', 'Пользователь', 'Отделение (Раздел)', 'Специальность'])
     for doctor in Doctor.objects.all():
         writer.writerow([doctor.id, doctor.user.username, doctor.department.name if doctor.department else '', doctor.specialty])
     return response
@@ -384,7 +381,7 @@ class VisitCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         return self.request.user.is_superuser or is_doctor(self.request.user) or is_nurse(self.request.user)
 
     def form_valid(self, form):
-        logger.info(f"User {self.request.user} created visit for patient {form.instance.patient.id}")
+        logger.info(f"Пользователь {self.request.user} создал посещение для пациента {form.instance.patient.id}")
         return super().form_valid(form)
 
 class VisitUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -411,7 +408,7 @@ class VisitUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def form_valid(self, form):
         # Avval ma'lumotni saqlaymiz
         self.object = form.save()
-        logger.info(f"User {self.request.user} updated visit {self.object.id}")
+        logger.info(f"Пользователь {self.request.user} обновил посещение {self.object.id}")
 
         user = self.request.user
         # So‘ng rolga qarab redirect qilamiz
@@ -433,7 +430,7 @@ class VisitDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
                 (is_doctor(self.request.user) and obj.doctor == self.request.user.doctor))
 
     def delete(self, request, *args, **kwargs):
-        logger.info(f"User {request.user} deleted visit {kwargs['pk']}")
+        logger.info(f"Пользователь {request.user} удалил посещение {kwargs['pk']}")
         return super().delete(request, *args, **kwargs)
 
 @login_required
@@ -473,7 +470,7 @@ class LabTestCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         return self.request.user.is_superuser or is_nurse(self.request.user)
 
     def form_valid(self, form):
-        logger.info(f"User {self.request.user} created labtest for patient {form.instance.patient.id}")
+        logger.info(f"Пользователь {self.request.user} создал лабораторный анализ для пациента {form.instance.patient.id}")
         return super().form_valid(form)
 
 class LabTestUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -489,7 +486,7 @@ class LabTestUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
                 is_nurse(self.request.user))
 
     def form_valid(self, form):
-        logger.info(f"User {self.request.user} updated labtest {form.instance.id}")
+        logger.info(f"Пользователь {self.request.user} обновил лабораторный анализ {form.instance.id}")
         return super().form_valid(form)
 
 class LabTestDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
@@ -502,7 +499,7 @@ class LabTestDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
                 (is_doctor(self.request.user) and obj.patient.visit_set.filter(doctor=self.request.user.doctor).exists()))
 
     def delete(self, request, *args, **kwargs):
-        logger.info(f"User {request.user} deleted labtest {kwargs['pk']}")
+        logger.info(f"Пользователь {request.user} удалил лабораторный анализ {kwargs['pk']}")
         return super().delete(request, *args, **kwargs)
 
 @login_required
@@ -510,7 +507,7 @@ def export_labtests_csv(request):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="labtests.csv"'
     writer = csv.writer(response)
-    writer.writerow(['ID', 'Bemor', 'Turi', 'Natija', 'Sana'])
+    writer.writerow(['ID', 'Пациент', 'Тип (Вид)', 'Результат', 'Дата'])
     for test in LabTest.objects.all():
         writer.writerow([test.id, str(test.patient), test.test_type, test.result[:50], test.result_date])
     return response
@@ -536,7 +533,7 @@ class MedicineCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         return self.request.user.is_superuser or is_doctor(self.request.user)
 
     def form_valid(self, form):
-        logger.info(f"User {self.request.user} created medicine {form.instance.name}")
+        logger.info(f"Пользователь {self.request.user} создал лекарство {form.instance.name}")
         return super().form_valid(form)
 
 class MedicineUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -549,7 +546,7 @@ class MedicineUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return self.request.user.is_superuser or is_doctor(self.request.user)
 
     def form_valid(self, form):
-        logger.info(f"User {self.request.user} updated medicine {form.instance.id}")
+        logger.info(f"Пользователь {self.request.user} обновил лекарство {form.instance.id}")
         return super().form_valid(form)
 
 class MedicineDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
@@ -560,7 +557,7 @@ class MedicineDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         return self.request.user.is_superuser
 
     def delete(self, request, *args, **kwargs):
-        logger.info(f"User {request.user} deleted medicine {kwargs['pk']}")
+        logger.info(f"Пользователь {request.user} удалил лекарство {kwargs['pk']}")
         return super().delete(request, *args, **kwargs)
 
 @login_required
@@ -568,7 +565,7 @@ def export_medicines_csv(request):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="medicines.csv"'
     writer = csv.writer(response)
-    writer.writerow(['ID', 'Nomi', 'Tavsif', 'Narx'])
+    writer.writerow(['ID', 'Название (Имя)', 'Описание', 'Цена'])
     for med in Medicine.objects.all():
         writer.writerow([med.id, med.name, med.description[:50], med.unit_price])
     return response
@@ -600,7 +597,7 @@ class PatientMedicineCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateV
         return self.request.user.is_superuser or is_doctor(self.request.user)
 
     def form_valid(self, form):
-        logger.info(f"User {self.request.user} prescribed medicine {form.instance.medicine.name} to patient {form.instance.patient.id}")
+        logger.info(f"Пользователь {self.request.user} назначил лекарство {form.instance.medicine.name} пациенту {form.instance.patient.id}")
         return super().form_valid(form)
 
 class PatientMedicineUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -615,7 +612,7 @@ class PatientMedicineUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateV
                 (is_doctor(self.request.user) and obj.patient.visit_set.filter(doctor=self.request.user.doctor).exists()))
 
     def form_valid(self, form):
-        logger.info(f"User {self.request.user} updated patientmedicine {form.instance.id}")
+        logger.info(f"Пользователь {self.request.user} обновил назначение лекарства пациенту {form.instance.id}")
         return super().form_valid(form)
 
 class PatientMedicineDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
@@ -628,7 +625,7 @@ class PatientMedicineDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteV
                 (is_doctor(self.request.user) and obj.patient.visit_set.filter(doctor=self.request.user.doctor).exists()))
 
     def delete(self, request, *args, **kwargs):
-        logger.info(f"User {request.user} deleted patientmedicine {kwargs['pk']}")
+        logger.info(f"Пользователь {request.user} удалил назначение лекарства пациенту {kwargs['pk']}")
         return super().delete(request, *args, **kwargs)
 
 @login_required
@@ -636,7 +633,7 @@ def export_patientmedicines_csv(request):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="patient_medicines.csv"'
     writer = csv.writer(response)
-    writer.writerow(['ID', 'Bemor', 'Dori', 'Miqdor', 'Sana'])
+    writer.writerow(['ID', 'Пациент', 'Лекарство (Препарат)', 'Количество (Доза)', 'Дата'])
     for pm in PatientMedicine.objects.all():
         writer.writerow([pm.id, str(pm.patient), str(pm.medicine), pm.quantity, pm.prescribed_date])
     return response
@@ -650,17 +647,14 @@ def signup(request):
             # Group qo'shish uchun admin paneldan
             username = form.cleaned_data.get('username')
             messages.success(request, f'Пользователь {username} успешно создан. Войдите, пожалуйста.')
-            logger.info(f"New user {username} signed up")
+            logger.info(f"Новый пользователь {username} зарегистрировался")
             return redirect('login')
     else:
         form = SignUpForm()
     return render(request, 'registration/signup.html', {'form': form})
 @login_required
 def latest_visits_api(request):
-    """
-    So‘nggi 5ta tashrifni JSON formatda qaytaradi.
-    Frontend fetch orqali chaqiradi.
-    """
+
     visits = (
         Visit.objects.select_related('patient', 'doctor')
         .order_by('-visit_datetime')[:5]
@@ -720,7 +714,7 @@ class PatientVisitsView(LoginRequiredMixin, ListView):
     context_object_name = 'visits'
 
     def get_queryset(self):
-        """Faqat hozirgi login bo‘lgan bemorning tashriflari chiqadi"""
+    
         patient = getattr(self.request.user, 'patient', None)
         if not patient:
             return Visit.objects.none()
@@ -730,7 +724,7 @@ class PatientVisitsView(LoginRequiredMixin, ListView):
             .order_by('-visit_datetime')
         )
 class DoctorTestMixin(UserPassesTestMixin):
-    """Faqat doktorlar uchun (is_doctor funksiyasiga asoslanib)"""
+
     def test_func(self):
         return self.request.user.is_authenticated and is_doctor(self.request.user)
     
@@ -747,29 +741,27 @@ class PrescribeMedicineView(LoginRequiredMixin, DoctorTestMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['form'] = PatientMedicineForm()
-        # Qo'shimcha: Barcha bemorlar va dorilarni context ga qo'shish (edit modal uchun)
+ 
         context['all_patients'] = Patient.objects.all()
         context['all_medicines'] = Medicine.objects.all()
         return context
 
     def post(self, request, *args, **kwargs):
-        action = request.POST.get('action')  # 'create', 'update' yoki 'delete'
+        action = request.POST.get('action')  
         
         if action == 'delete':
             prescription_id = request.POST.get('prescription_id')
             prescription = get_object_or_404(PatientMedicine, id=prescription_id)
-            if hasattr(request.user, 'doctor'):  # Faqat doktor o'chira oladi
+            if hasattr(request.user, 'doctor'): 
                 prescription.delete()
                 messages.success(request, 'Назначение удалено!')
             else:
                 messages.error(request, 'У вас нет прав на удаление.')
-            return HttpResponseRedirect(request.path)  # Ro'yxatga qaytish
+            return HttpResponseRedirect(request.path)  
         
         elif action == 'update':
             prescription_id = request.POST.get('prescription_id')
             prescription = get_object_or_404(PatientMedicine, id=prescription_id)
-            # Update uchun maxsus formani ishlatish yoki manual saqlash
-            # Bu yerda manual saqlash (chunki modalda oddiy select/input lar)
             patient_id = request.POST.get('patient')
             medicine_id = request.POST.get('medicine')
             quantity = request.POST.get('quantity')
@@ -786,11 +778,11 @@ class PrescribeMedicineView(LoginRequiredMixin, DoctorTestMixin, ListView):
             except Exception as e:
                 messages.error(request, f'Ошибка при обновлении: {str(e)}')
             
-            # Xato bo'lsa, context ni to'ldirib qayta render
+           
             context = self.get_context_data()
             return self.render_to_response(context)
         
-        else:  # Create (mavjud)
+        else:  
             form = PatientMedicineForm(request.POST)
             if form.is_valid():
                 form.save()
@@ -845,7 +837,7 @@ def reception_patients(request):
     return render(request, 'reception/patient.html', {'patients': patients, 'form': form})
 
 
-# 👨‍⚕️ Yangi bemor qo‘shish
+
 def add_patient(request):
     if request.method == 'POST':
         first_name = request.POST.get('first_name')
@@ -872,7 +864,7 @@ def add_patient(request):
     return render(request, 'reception/add_patient.html')
 
 
-# ✏️ Bemorni tahrirlash
+
 def edit_patient(request, pk):
     patient = get_object_or_404(Patient, pk=pk)
     if request.method == 'POST':
@@ -891,13 +883,12 @@ def edit_patient(request, pk):
 
 
 
-# 🩺 Tashriflar ro‘yxati
+
 def reception_visits(request):
     visits = Visit.objects.select_related('patient', 'doctor').order_by('-visit_datetime')
     return render(request, 'reception/visit.html', {'visits': visits})
 
 
-# ➕ Yangi tashrif qo‘shish
 def add_visit(request):
     patients = Patient.objects.all()
     doctors = Doctor.objects.all()
@@ -931,7 +922,6 @@ def add_visit(request):
     return render(request, 'reception/add_visit.html', context)
 
 
-# 📝 Tashrifni tahrirlash
 def edit_visit(request, pk):
     visit = get_object_or_404(Visit, pk=pk)
     patients = Patient.objects.all()
@@ -957,9 +947,9 @@ def edit_visit(request, pk):
 
 
 def reception_patient_detail(request, pk):
-    # Bemorni topamiz
+
     patient = get_object_or_404(Patient, pk=pk)
-    # Shu bemorga tegishli barcha tashriflar
+
     visits = Visit.objects.filter(patient=patient).order_by('-visit_datetime')
     
     return render(request, 'reception/patient_detail.html', {
@@ -999,21 +989,21 @@ def reception_list(request):
 
 
 
- # make_login kerak bo'lmasa, olib tashlang
+
 
 def add_reception(request):
     from django.core.exceptions import ValidationError
     from django.contrib.auth.models import User 
     if request.method == 'POST':
 
-        # Majburiy maydonlarni POST'dan o'qing
+   
         first_name = request.POST.get('first_name', '').strip()
         last_name = request.POST.get('last_name', '').strip()
         username = request.POST.get('username', '').strip()
         password = request.POST.get('password', '').strip()
-        email = request.POST.get('email', '').strip()  # Ixtiyoriy
-        
-        # Majburiy validatsiya
+        email = request.POST.get('email', '').strip()  
+  
+
         errors = []
         if not first_name:
             errors.append("Имя обязательно для заполнения!")
@@ -1031,34 +1021,34 @@ def add_reception(request):
                 'last_name': last_name,
                 'username': username,
                 'email': email,
-                'password': ''  # Parolni qayta ko'rsatmaslik uchun bo'sh
+                'password': ''  
             }
             return render(request, 'reception/add.html', context)
         
         try:
-            # User yarating (majburiy maydonlar bilan)
+     
             user = User.objects.create_user(
                 username=username,
-                email=email or '',  # Bo'sh bo'lsa, bo'sh
+                email=email or '',  
                 password=password,
                 first_name=first_name,
                 last_name=last_name
             )
             
-            # Reception yarating va user bilan bog'lang
+          
             reception = Reception.objects.create(
                 user=user,
-                first_name=first_name,  # Duplikat saqlash
-                last_name=last_name,    # Duplikat saqlash
-                plain_password=password  # Plain parolni saqlang (test uchun)
+                first_name=first_name,  
+                last_name=last_name,   
+                plain_password=password  
             )
             
-            # Xabar: Muvaffaqiyat va login/parol info
+            
             messages.success(request, f'Вы написали! Логин: {username} Пароль: {password}')
             return redirect('reception_list')
             
         except ValidationError as e:
-            # Terminalda ko'ring (masalan, parol qisqa)
+           
             errors.append(f"Ошибка при сохранении: {str(e)}")
             return render(request, 'reception/add.html', {
                 'errors': errors,
@@ -1080,7 +1070,6 @@ def add_reception(request):
                 'password': ''
             })
     
-    # GET: Bo'sh sahifa
     return render(request, 'reception/add.html')
 
 def delete_reception(request, pk):
