@@ -14,104 +14,93 @@
    ```bash
    psql -U postgres
    CREATE DATABASE hospital_db;
-
-Пользователь: postgres
-Пароль: postgres
-
-
-Перейдите в папку проектаbashcd avtobolnitsu
-Создайте виртуальное окружение (рекомендуется)bashpython -m venv venv
-source venv/bin/activate   # Linux/Mac
-venv\Scripts\activate      # Windows
-Установите зависимостиbashpip install -r requirements.txt
-Выполните миграцииbashpython manage.py makemigrations
-python manage.py migrate
-Создайте суперпользователя (администратора)bashpython manage.py createsuperuser
-Запустите сервер разработкиbashpython manage.py runserver
-Откройте в браузереhttp://localhost:8000
-
-
-Использование
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-РольВходОсновные функцииАдминистратор/admin/Полный доступ: управление всеми даннымиПациент/login/ → Личный кабинетЗапись к врачу, просмотр визитов, анализов, лекарствРегистратор/login/ → Панель регистратораДобавление пациентов, запись на приёмВрач/login/ → Панель врачаВедение карт, назначение лечения и анализов
-Основные URL
-
-Главная: /
-Регистрация: /signup/
-Вход: /login/
-Личный кабинет: /dashboard/
-Пациенты: /patients/
-Врачи: /doctors/
-Визиты: /visits/
-Анализы: /labtests/
-Лекарства: /medicines/
-
-Экспорт в CSV — доступен на всех списках (кнопка "Экспорт CSV")
-Логи — сохраняются в logs/app.log
-
-Технологии
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-УровеньТехнологияBackendPython 3.10+, Django 5.0, Django ORMБаза данныхPostgreSQL 16FrontendHTML5, CSS3 (Bootstrap 5), JavaScript (минимально)АутентификацияDjango Auth + кастомные профилиРазвёртываниеmanage.py runserver (dev), Gunicorn + Nginx (prod)
-
-Структура проекта (кратко)
-textavtobolnitsu/
+   ```
+
+   **Пользователь:** postgres  
+   **Пароль:** postgres
+
+3. **Перейдите в папку проекта**
+   ```bash
+   cd avtobolnitsu
+   ```
+
+4. **Создайте виртуальное окружение (рекомендуется)**
+   ```bash
+   python -m venv venv
+   source venv/bin/activate   # Linux/Mac
+   venv\Scripts\activate      # Windows
+   ```
+
+5. **Установите зависимости**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+6. **Выполните миграции**
+   ```bash
+   python manage.py makemigrations
+   python manage.py migrate
+   ```
+
+7. **Создайте суперпользователя (администратора)**
+   ```bash
+   python manage.py createsuperuser
+   ```
+
+8. **Запустите сервер разработки**
+   ```bash
+   python manage.py runserver
+   ```
+
+9. **Откройте в браузере**
+   [http://localhost:8000](http://localhost:8000)
+
+---
+
+## Использование
+
+| Роль | Вход | Основные функции |
+|------|------|------------------|
+| **Администратор** | `/admin/` | Полный доступ: управление всеми данными |
+| **Пациент** | `/login/` → Личный кабинет | Запись к врачу, просмотр визитов, анализов, лекарств |
+| **Регистратор** | `/login/` → Панель регистратора | Добавление пациентов, запись на приём |
+| **Врач** | `/login/` → Панель врача | Ведение карт, назначение лечения и анализов |
+
+---
+
+## Основные URL
+
+- Главная: `/`
+- Регистрация: `/signup/`
+- Вход: `/login/`
+- Личный кабинет: `/dashboard/`
+- Пациенты: `/patients/`
+- Врачи: `/doctors/`
+- Визиты: `/visits/`
+- Анализы: `/labtests/`
+- Лекарства: `/medicines/`
+
+Экспорт в CSV — доступен на всех списках (кнопка "Экспорт CSV")  
+Логи — сохраняются в `logs/app.log`
+
+---
+
+## Технологии
+
+| Уровень | Технология |
+|----------|-------------|
+| **Backend** | Python 3.10+, Django 5.0, Django ORM |
+| **База данных** | PostgreSQL 16 |
+| **Frontend** | HTML5, CSS3 (Bootstrap 5), JavaScript (минимально) |
+| **Аутентификация** | Django Auth + кастомные профили |
+| **Развёртывание** | manage.py runserver (dev), Gunicorn + Nginx (prod) |
+
+---
+
+## Структура проекта (кратко)
+
+```
+avtobolnitsu/
 ├── patients/        # Пациенты
 ├── doctors/         # Врачи
 ├── visits/          # Визиты
@@ -123,16 +112,22 @@ textavtobolnitsu/
 ├── static/          # CSS, JS, изображения
 ├── logs/            # Логи
 └── manage.py
+```
 
-Безопасность
+---
 
-Пароли хешируются (PBKDF2)
-Доступ по ролям (декораторы, миксины)
-Защита от SQL-инъекций (через ORM)
-Логирование всех действий
+## Безопасность
 
+- Пароли хешируются (PBKDF2)  
+- Доступ по ролям (декораторы, миксины)  
+- Защита от SQL-инъекций (через ORM)  
+- Логирование всех действий
 
-Разработчик
-Abdurasul X.
-GitHub: github.com/abdurasulx/avtobolnitsu
-Готово к использованию в реальной поликлинике!
+---
+
+## Разработчик
+
+**Abdurasul X.**  
+GitHub: [github.com/abdurasulx/avtobolnitsu](https://github.com/abdurasulx/avtobolnitsu)
+
+**Готово к использованию в реальной поликлинике!**
