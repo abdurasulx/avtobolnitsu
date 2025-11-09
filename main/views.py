@@ -33,7 +33,7 @@ def is_doctor(user):
     return hasattr(user, 'doctor')
 
 def is_nurse(user):
-    # Hamshira uchun group check (admin panelda group yarating)
+
     return user.groups.filter(name='Nurse').exists()
 def is_receptionist(user):
     return hasattr(user, 'reception')
@@ -48,7 +48,7 @@ def dashboard(request):
     today = timezone.now().date()
     now = timezone.now()
 
-    # 🩺 1️⃣ Shifokor uchun sahifa
+
     if doctor:
         recent_week = now - timedelta(days=7)
         recent_visits = (
@@ -79,16 +79,14 @@ def dashboard(request):
 
         return render(request, 'doctors/dashboard.html', context)
 
-    # 💊 2️⃣ Bemor uchun sahifa
     elif patient:
-        # Bemorning o‘z tashriflari
+
         patient_visits = (
             Visit.objects.filter(patient=patient)
             .select_related('doctor')
             .order_by('-visit_datetime')[:5]
         )
 
-        # Agar dorilari yoki tashriflari mavjud bo‘lmasa, xabar chiqadi
         if not patient_visits.exists():
             message = "На данный момент вы не проходите лечение."
         else:
@@ -115,11 +113,10 @@ def dashboard(request):
         }
 
         return render(request, 'reception/dashboard.html', context)
-    # user not registired go to langding page
     elif not request.user.is_authenticated:
         return redirect('landing')
 
-    # 👑 3️⃣ Admin uchun sahifa
+
     else:
         one_hour_ago = now - timedelta(hours=1)
 
@@ -134,7 +131,7 @@ def dashboard(request):
             .order_by('-visit_datetime')[:5]
         )
 
-        # Grafik uchun 7 kunlik ma'lumot
+
         visits_last_7_days = []
         for i in range(7):
             date = today - timedelta(days=i)
