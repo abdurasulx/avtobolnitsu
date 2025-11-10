@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from .func import make_login, make_password
+from .func import make_login, make_password, to_latin
 
 
 class Reception(models.Model):
@@ -50,12 +50,15 @@ class Patient(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     plain_password = models.CharField(max_length=255, blank=True, null=True)
 
+    
 
     def save(self, *args, **kwargs):
         # Faqat yangi obyekt yaratilganda (update emas) va user yo'q bo'lsa
         if not self.pk and not self.user:  # self.pk None bo'lsa - yangi obyekt
-            username = make_login(f"{self.first_name}{self.last_name}")
+            username = make_login(to_latin(f"{self.first_name}{self.last_name}"))
             password = f"{self.first_name}{self.last_name}2024!"
+      
+
             self.user = User.objects.create_user(
                 username=username,
                 first_name=self.first_name,
@@ -63,7 +66,9 @@ class Patient(models.Model):
                 password=password  # make_password o'rniga to'g'ridan-to'g'ri password uzating (create_user hash qiladi)
 
             )
+        
             self.plain_password = password  # Oddiy parolni saqlaymiz
+        
         super().save(*args, **kwargs)  # Standart save ni chaqiring
 
     def __str__(self):
