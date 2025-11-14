@@ -13,7 +13,7 @@
       <tr>
         <th>#</th>
 <th>Полное имя</th>
-<th>Телефон</th>
+{% comment %} <th>Телефон</th> {% endcomment %}
 <th>Адрес</th>
 <th>Вход</th>
 <th>Действия</th>
@@ -24,8 +24,8 @@
       <tr>
         <td>{{ forloop.counter }}</td>
         <td>{{ r.user.get_full_name }}</td>
-        <td>{{ r.phone }}</td>
-        <td>{{ r.address }}</td>
+        {% comment %} <td>{{ r.phone }}</td> {% endcomment %}
+        <td>{{ r.user.email }}</td>
         <td>{{ r.user.username }}</td>
         <td>
           <a href="{% url 'delete_reception' r.id %}" 

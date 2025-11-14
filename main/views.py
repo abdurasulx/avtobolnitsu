@@ -982,6 +982,7 @@ def reception_change_password(request):
     
 def reception_list(request):
     receptions = Reception.objects.select_related('user').all()
+
     return render(request, 'reception/list.html', {'receptions': receptions})
 
 
