@@ -74,12 +74,14 @@ class Patient(models.Model):
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
 
+from django.utils import timezone
+
 class Visit(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
     doctor = models.ForeignKey(Doctor, on_delete=models.SET_NULL, null=True)
     diagnosis = models.TextField()
     treatment_plan = models.TextField()
-    visit_datetime = models.DateTimeField(auto_now_add=True)
+    visit_datetime = models.DateTimeField(default=timezone.now)
     status = models.CharField(max_length=15, choices=[('in_progress', 'В процессе'), ('ended', 'Завершен')], default='in_progress')
     result= models.CharField(max_length=255, choices=[('hospital', 'Стационарное лечение (в палате)'),('home', ' Домашнее лечение'),('none', 'Не подлежит лечению'),('in_progress', 'В процессе')], blank=True, null=True,default='in_progress')
 

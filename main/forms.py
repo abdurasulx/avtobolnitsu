@@ -21,14 +21,14 @@ class PatientForm(forms.ModelForm):
         
         widgets = {
             'birth_date': forms.DateInput(
-    format='%Y-%m-%d',
-    attrs={'type': 'date'}
-),
+                format='%Y-%m-%d',
+                attrs={'type': 'date'}
+            ),
             'phone': forms.TextInput(attrs={'placeholder': '+7 (495) 539-55-19'}),
         }
 
 class DoctorForm(forms.ModelForm):
-    # User bilan bog‘liq maydonlar
+    # User bilan bog'liq maydonlar
     username = forms.CharField(label="Логин", max_length=150)
     first_name = forms.CharField(label="Имя", max_length=150)
     last_name = forms.CharField(label="Фамилия", max_length=150)
@@ -60,7 +60,7 @@ class DoctorForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-        """Tahrirlash paytida mavjud user ma'lumotlarini formga to‘ldirib qo‘yish."""
+        """Tahrirlash paytida mavjud user ma'lumotlarini formga to'ldirib qo'yish."""
         super().__init__(*args, **kwargs)
         if self.instance and self.instance.pk:
             user = self.instance.user
@@ -71,10 +71,10 @@ class DoctorForm(forms.ModelForm):
             self.fields['img'].initial = self.instance.img
 
     def save(self, commit=True):
-        """Yaratish va yangilashni to‘g‘ri ajratadi."""
+        """Yaratish va yangilashni to'g'ri ajratadi."""
         doctor = super().save(commit=False)
 
-        # Agar mavjud doctorni tahrirlayotgan bo‘lsak
+        # Agar mavjud doctorni tahrirlayotgan bo'lsak
         if doctor.pk:
             doctor.img = self.cleaned_data['img']
             user = doctor.user
@@ -100,10 +100,11 @@ class DoctorForm(forms.ModelForm):
         if commit:
             doctor.save()
         return doctor
+
 class VisitForm(forms.ModelForm):
     class Meta:
         model = Visit
-        fields = ['patient', 'doctor', 'diagnosis', 'status', 'treatment_plan', 'result']
+        fields = ['patient', 'doctor', 'diagnosis', 'status', 'treatment_plan', 'result', 'visit_datetime']
         labels = {
             'patient': 'Пациент',
             'doctor': 'Врач',
@@ -111,10 +112,12 @@ class VisitForm(forms.ModelForm):
             'status': 'Статус',
             'treatment_plan': 'План лечения',
             'result': 'Результат',
+            'visit_datetime': 'Дата и время посещения',
         }
         widgets = {
             'diagnosis': forms.Textarea(attrs={'rows': 3}),
             'treatment_plan': forms.Textarea(attrs={'rows': 3}),
+            'visit_datetime': forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'form-control'}),
         }
 
 class LabTestForm(forms.ModelForm):
@@ -128,7 +131,7 @@ class LabTestForm(forms.ModelForm):
             'result_date': 'Дата результата',
         }
         widgets = {
-            'result_date':forms.DateInput(format='%Y-%m-%d',attrs={'type': 'date'}),
+            'result_date': forms.DateInput(format='%Y-%m-%d', attrs={'type': 'date'}),
             'result': forms.Textarea(attrs={'rows': 3}),
         }
 
@@ -177,6 +180,7 @@ class SignUpForm(UserCreationForm):
         if commit:
             user.save()
         return user
+
 class SetPasswordForm(forms.Form):
     new_password1 = forms.CharField(
         label="Новый пароль",
@@ -196,6 +200,7 @@ class SetPasswordForm(forms.Form):
             raise forms.ValidationError("Пароли не совпадают.")
 
         return cleaned_data
+
 class SetPPasswordForm(forms.Form):
     new_password1 = forms.CharField(
         label="Новый пароль",
@@ -228,8 +233,6 @@ class SetPPasswordForm(forms.Form):
         validate_password(password1, self.user)
 
         return cleaned_data
-    
-
 
 class ReceptionForm(forms.ModelForm):
     first_name = forms.CharField(label='Имя', required=True)
@@ -257,6 +260,7 @@ class ReceptionForm(forms.ModelForm):
         if commit:
             reception.save()
         return reception
+
 class ReceptionEditForm(forms.ModelForm):
     first_name = forms.CharField(label='Имя')
     last_name = forms.CharField(label='Фамилия')
@@ -265,7 +269,7 @@ class ReceptionEditForm(forms.ModelForm):
 
     class Meta:
         model = Reception
-        fields = []  # Reception modelida qo‘shimcha maydon yo‘q
+        fields = []  # Reception modelida qo'shimcha maydon yo'q
 
     def save(self, commit=True):
         reception = super().save(commit=False)
@@ -281,6 +285,7 @@ class ReceptionEditForm(forms.ModelForm):
             user.save()
             reception.save()
         return reception
+
 class DepartmentForm(forms.ModelForm):
     
     class Meta:
@@ -303,3 +308,72 @@ class DepartmentForm(forms.ModelForm):
                 'placeholder': 'Описание' 
             }),
         }
+
+# New form for patient appointment booking
+class AppointmentForm(forms.ModelForm):
+    booking_for_self = forms.BooleanField(
+        required=False, 
+        initial=True,
+        label='Записываю себя',
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
+    )
+    
+    # Fields for booking another patient
+    other_first_name = forms.CharField(
+        required=False, 
+        max_length=100,
+        label='Имя пациента',
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    other_last_name = forms.CharField(
+        required=False, 
+        max_length=100,
+        label='Фамилия пациента',
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    other_phone = forms.CharField(
+        required=False, 
+        max_length=30,
+        label='Телефон пациента',
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '+7 (495) 539-55-19'})
+    )
+    other_birth_date = forms.DateField(
+        required=False,
+        label='Дата рождения пациента',
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'})
+    )
+    other_gender = forms.ChoiceField(
+        required=False,
+        choices=[('M', 'Мужской'), ('F', 'Женский')],
+        label='Пол пациента',
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    
+    class Meta:
+        model = Visit
+        fields = ['doctor', 'visit_datetime']
+        labels = {
+            'doctor': 'Врач',
+            'visit_datetime': 'Дата и время приёма',
+        }
+        widgets = {
+            'doctor': forms.Select(attrs={'class': 'form-control'}),
+            'visit_datetime': forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'form-control'}),
+        }
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        booking_for_self = cleaned_data.get('booking_for_self')
+        
+        if not booking_for_self:
+            # Validate other patient fields
+            if not cleaned_data.get('other_first_name'):
+                raise forms.ValidationError('Имя пациента обязательно')
+            if not cleaned_data.get('other_last_name'):
+                raise forms.ValidationError('Фамилия пациента обязательна')
+            if not cleaned_data.get('other_phone'):
+                raise forms.ValidationError('Телефон пациента обязателен')
+            if not cleaned_data.get('other_birth_date'):
+                raise forms.ValidationError('Дата рождения пациента обязательна')
+        
+        return cleaned_data

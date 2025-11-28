@@ -803,6 +803,7 @@ def create_visit(request):
         last_name = request.POST.get('last_name')
         phone = request.POST.get('phone')
         doctor_id = request.POST.get('doctor')
+        visit_datetime = request.POST.get('visit_datetime')
 
         patient, _ = Patient.objects.get_or_create(
             first_name=first_name,
@@ -811,12 +812,18 @@ def create_visit(request):
             defaults={'birth_date': '2000-01-01', 'gender': 'M'}
         )
 
-        Visit.objects.create(
-            patient=patient,
-            doctor_id=doctor_id,
-            diagnosis='',
-            treatment_plan=''
-        )
+        visit_data = {
+            'patient': patient,
+            'doctor_id': doctor_id,
+            'diagnosis': '',
+            'treatment_plan': ''
+        }
+        
+        if visit_datetime:
+            from datetime import datetime
+            visit_data['visit_datetime'] = datetime.fromisoformat(visit_datetime)
+        
+        Visit.objects.create(**visit_data)
         return redirect('landing')
 
     return redirect('landing')

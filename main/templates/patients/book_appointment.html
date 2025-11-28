@@ -1,0 +1,111 @@
+{% extends 'patients/base.html' %}
+
+{% block title %}Запись на приём{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">📅 Запись на приём</h4>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    {% if form.errors %}
+                        <div class="alert alert-danger">
+                            {{ form.errors }}
+                        </div>
+                    {% endif %}
+
+                    <!-- Booking Type Selection -->
+                    <div class="mb-4 p-3 bg-light rounded border">
+                        <div class="form-check form-switch">
+                            {{ form.booking_for_self }}
+                            <label class="form-check-label fw-bold" for="{{ form.booking_for_self.id_for_label }}">
+                                {{ form.booking_for_self.label }}
+                            </label>
+                        </div>
+                        <small class="text-muted">Снимите галочку, если хотите записать другого человека.</small>
+                    </div>
+
+                    <!-- Other Patient Details (Hidden by default) -->
+                    <div id="other-patient-fields" style="display: none;">
+                        <h5 class="text-secondary mb-3">Данные пациента</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.other_first_name.label }}</label>
+                                {{ form.other_first_name }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.other_last_name.label }}</label>
+                                {{ form.other_last_name }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.other_phone.label }}</label>
+                                {{ form.other_phone }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.other_birth_date.label }}</label>
+                                {{ form.other_birth_date }}
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">{{ form.other_gender.label }}</label>
+                            {{ form.other_gender }}
+                        </div>
+                        <hr>
+                    </div>
+
+                    <!-- Appointment Details -->
+                    <h5 class="text-secondary mb-3">Детали приёма</h5>
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.doctor.label }}</label>
+                        {{ form.doctor }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.visit_datetime.label }}</label>
+                        {{ form.visit_datetime }}
+                        <div class="form-text">Выберите удобную дату и время.</div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">Записаться</button>
+                        <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">Отмена</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const checkbox = document.getElementById('{{ form.booking_for_self.id_for_label }}');
+        const otherFields = document.getElementById('other-patient-fields');
+        
+        function toggleFields() {
+            if (checkbox.checked) {
+                otherFields.style.display = 'none';
+                // Clear required attributes if hidden
+                const inputs = otherFields.querySelectorAll('input, select');
+                inputs.forEach(input => input.removeAttribute('required'));
+            } else {
+                otherFields.style.display = 'block';
+                // Add required attributes if shown (optional, backend validation handles it too)
+            }
+        }
+
+        checkbox.addEventListener('change', toggleFields);
+        
+        // Initial state
+        toggleFields();
+    });
+</script>
+{% endblock %}

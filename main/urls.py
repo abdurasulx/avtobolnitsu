@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from . import patient_views
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
@@ -81,6 +82,11 @@ urlpatterns = [
 
     #Department
     path('department/add',views.department_create,name='add_department'),
-    path('api/department/add/',views.department_add,name='add_department_api')
+    path('api/department/add/',views.department_add,name='add_department_api'),
+    
+    # Patient menu enhancements - import from patient_views
+    path('patients/prescriptions/', patient_views.patient_prescriptions, name='patient_prescriptions'),
+    path('patients/labtests/', patient_views.patient_labtests, name='patient_labtests'),
+    path('patients/book-appointment/', patient_views.patient_book_appointment, name='patient_book_appointment'),
 
 ]

@@ -1,0 +1,43 @@
+{% extends 'patients/base.html' %}
+
+{% block title %}Мои назначения{% endblock %}
+
+{% block content %}
+<div class="card shadow">
+    <div class="card-header bg-success text-white">
+        <h4 class="mb-0">💊 Мои назначения</h4>
+    </div>
+    <div class="card-body">
+        {% if prescriptions %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Лекарство</th>
+                        <th>Количество</th>
+                        <th>Цена за ед.</th>
+                        <th>Дата назначения</th>
+                        <th>Описание</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in prescriptions %}
+                    <tr>
+                        <td class="fw-bold">{{ item.medicine.name }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ item.medicine.unit_price }} сум</td>
+                        <td>{{ item.prescribed_date|date:"d.m.Y" }}</td>
+                        <td>{{ item.medicine.description|truncatechars:50 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-4">
+            <p class="text-muted mb-0">У вас пока нет назначений.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

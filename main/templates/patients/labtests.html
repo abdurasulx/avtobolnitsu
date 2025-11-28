@@ -1,0 +1,39 @@
+{% extends 'patients/base.html' %}
+
+{% block title %}Мои анализы{% endblock %}
+
+{% block content %}
+<div class="card shadow">
+    <div class="card-header bg-info text-white">
+        <h4 class="mb-0">🧪 Мои анализы</h4>
+    </div>
+    <div class="card-body">
+        {% if labtests %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Тип анализа</th>
+                        <th>Результат</th>
+                        <th>Дата результата</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for test in labtests %}
+                    <tr>
+                        <td class="fw-bold">{{ test.test_type }}</td>
+                        <td>{{ test.result }}</td>
+                        <td>{{ test.result_date|date:"d.m.Y" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-4">
+            <p class="text-muted mb-0">У вас пока нет результатов анализов.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
