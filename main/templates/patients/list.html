@@ -17,7 +17,7 @@
             <td>{{ patient.phone }}</td>
             <td>{{ patient.created_at|date:"d.m.Y" }}</td>
             <td>{{ patient.user.username }}</td>
-            <td>{{ patient.user.plain_password }}</td>
+            <td>{{ patient.plain_password }}</td>
             <td>
                 <a href="{% url 'patient_detail' patient.pk %}">Просмотр</a>
                 <a href="{% url 'patient_edit' patient.pk %}">Редактировать</a>

@@ -549,6 +549,7 @@ class MedicineUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 class MedicineDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Medicine
     success_url = '/medicines/'
+    template_name = 'medicines/delete.html'
 
     def test_func(self):
         return self.request.user.is_superuser

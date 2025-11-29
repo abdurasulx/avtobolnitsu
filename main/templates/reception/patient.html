@@ -58,8 +58,8 @@
             <div class="col-md-6">
               <label class="form-label">Пол</label>
               <select class="form-select" name="gender">
-                <option value="M" {% if p.gender == "M" %}selected{% endif %}>Erkak</option>
-                <option value="F" {% if p.gender == "F" %}selected{% endif %}>Ayol</option>
+                <option value="M" {% if p.gender == "M" %}selected{% endif %}>Мужской</option>
+                <option value="F" {% if p.gender == "F" %}selected{% endif %}>Женский</option>
               </select>
             </div>
 
@@ -80,7 +80,7 @@
 
             <div class="col-12">
               <label class="form-label">Адрес</label>
-              <input type="text" class="form-control" name="address" value="{{ p.address }}" placeholder="Manzil">
+              <input type="text" class="form-control" name="address" value="{{ p.address }}" placeholder="Адрес">
             </div>
 
             <div class="col-12">
