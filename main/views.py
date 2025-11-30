@@ -1136,6 +1136,21 @@ def department_create(request):
     else:
         form = DepartmentForm()
     return render(request,'department/add.html',{'form':form})
+def derpartment_edit(request, pk):
+    department = get_object_or_404(Department, pk=pk)
+    if request.method == 'POST':
+        form = DepartmentForm(request.POST, instance=department)
+        form.save()
+        return  redirect('doctor_add')
+    else:
+        form = DepartmentForm(instance=department)
+    return render(request, 'department/edit.html', {'form': form, 'department': department})
+
+def department_delete(request, pk):
+    department = get_object_or_404(Department, pk=pk)
+    department.delete()
+    return redirect('doctor_add')
+    
 def department_add(request):
     if request.method=="POST":
         form=DepartmentForm(request.POST)
@@ -1151,17 +1166,3 @@ def department_update(request, pk):
         form = DepartmentForm(instance=department)
     return save_department_form(request, form, 'department/includes/partial_department_update.html')
 
-def department_delete(request, pk):
-    department = get_object_or_404(Department, pk=pk)
-    data = {}
-    if request.method == 'POST':
-        department.delete()
-        data['form_is_valid'] = True
-        departments = Department.objects.all()
-        data['html_department_list'] = render_to_string('department/includes/partial_department_list.html', {
-            'departments': departments
-        })
-    else:
-        context = {'department': department}
-        data['html_form'] = render_to_string('department/includes/partial_department_delete.html', context, request=request)
-    return JsonResponse(data)

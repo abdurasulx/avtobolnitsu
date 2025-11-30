@@ -82,6 +82,8 @@ urlpatterns = [
 
     #Department
     path('department/add',views.department_create,name='add_department'),
+    path('department/<int:pk>/edit/',views.derpartment_edit,name='edit_department'),
+    path('department/<int:pk>/delete/',views.department_delete,name='delete_department'),
     path('api/department/add/',views.department_add,name='add_department_api'),
     
     # Patient menu enhancements - import from patient_views

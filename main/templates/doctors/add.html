@@ -2,37 +2,22 @@
 {% block content %}
 <div class="container mt-4">
   <h2 class="fw-bold text-primary mb-3">Добавление нового врача</h2>
+
   <form method="post" enctype="multipart/form-data" class="p-3 border rounded bg-light shadow-sm">
     {% csrf_token %}
     <div class="row">
       <div class="col-md-6">
-        <div class="mb-3">
-          {{ form.username.label_tag }} {{ form.username }}
-        </div>
-        <div class="mb-3">
-          {{ form.first_name.label_tag }} {{ form.first_name }}
-        </div>
-        <div class="mb-3">
-          {{ form.last_name.label_tag }} {{ form.last_name }}
-        </div>
-        <div class="mb-3">
-          {{ form.email.label_tag }} {{ form.email }}
-        </div>
+        <div class="mb-3">{{ form.username.label_tag }} {{ form.username }}</div>
+        <div class="mb-3">{{ form.first_name.label_tag }} {{ form.first_name }}</div>
+        <div class="mb-3">{{ form.last_name.label_tag }} {{ form.last_name }}</div>
+        <div class="mb-3">{{ form.email.label_tag }} {{ form.email }}</div>
       </div>
 
       <div class="col-md-6">
-        <div class="mb-3">
-          {{ form.department.label_tag }} {{ form.department }}
-        </div>
-        <div class="mb-3">
-          {{ form.specialty.label_tag }} {{ form.specialty }}
-        </div>
-        <div class="mb-3">
-          {{ form.detail.label_tag }} {{ form.detail }}
-        </div>
-        <div class="mb-3">
-          {{ form.img.label_tag }} {{ form.img }}
-        </div>
+        <div class="mb-3">{{ form.department.label_tag }} {{ form.department }}</div>
+        <div class="mb-3">{{ form.specialty.label_tag }} {{ form.specialty }}</div>
+        <div class="mb-3">{{ form.detail.label_tag }} {{ form.detail }}</div>
+        <div class="mb-3">{{ form.img.label_tag }} {{ form.img }}</div>
       </div>
     </div>
 
@@ -42,24 +27,63 @@
 </div>
 
 <script>
+document.addEventListener("DOMContentLoaded", function () {
 
-  const addUrl = "{% url 'add_department' %}";
-  
-  const selectElement = document.querySelector('.form-select');
-  
-  
-  const addDepartmentOption = new Option("Добавить отдел", addUrl);
-  selectElement.add(addDepartmentOption);
+    const addUrl = "{% url 'add_department' %}";
+    const selectElement = document.querySelector('.form-select');
 
-  selectElement.addEventListener('change', function() {
-    const selectedValue = this.value;
+    // --- ACTIONS container yaratish ---
+    const actionsContainer = document.createElement('div');
+    actionsContainer.style.marginTop = "15px";
+    selectElement.insertAdjacentElement("afterend", actionsContainer);
 
+    // --- HAR BIR OPTION UCHUN EDIT / DELETE tugma chiqarish ---
+    function renderActions() {
+        actionsContainer.innerHTML = "";
 
-    if (selectedValue=="/department/add") {
-        
-      
-      window.location.href = selectedValue;
+        const options = selectElement.querySelectorAll('option');
+
+        options.forEach(option => {
+
+            if (option.value.trim() === "" || option.value === addUrl) return;
+
+            const id = option.value;
+            const name = option.textContent;
+
+            const editUrl = `/department/${id}/edit/`;
+            const deleteUrl = `/department/${id}/delete/`;
+
+            const item = document.createElement('div');
+            item.style.marginBottom = "8px";
+
+            item.innerHTML = `
+                <strong>${name}</strong>
+                <button onclick="window.location.href='${editUrl}'" class="btn btn-sm btn-primary" style="margin-left:10px;">
+                    <i class="bi bi-pencil"></i>
+                </button>
+                <button onclick="window.location.href='${deleteUrl}'" class="btn btn-sm btn-danger" style="margin-left:5px;">
+                    <i class="bi bi-trash"></i>
+                </button>
+            `;
+
+            actionsContainer.appendChild(item);
+        });
     }
-  });
+
+    // --- Добавить отдел option qo‘shish ---
+    const addDepartmentOption = new Option("➕ Добавить отдел", addUrl);
+    selectElement.add(addDepartmentOption);
+
+    // --- ADD DEPT bosilganda yo‘naltirish ---
+    selectElement.addEventListener('change', function () {
+        if (this.value === addUrl) {
+            window.location.href = this.value;
+        }
+    });
+
+    // --- Tutor render qilish ---
+    renderActions();
+});
 </script>
+
 {% endblock %}
