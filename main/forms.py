@@ -15,7 +15,7 @@ class PatientForm(forms.ModelForm):
             'gender': 'Пол',
             'phone': 'Телефон',
             'address': 'Адрес',
-            'insurance_number': 'Номер страховки',
+            'insurance_number': 'Номер страхового свидетельства (СНИЛС)',
             'plain_password': 'Пароль',
         }
         
@@ -25,6 +25,7 @@ class PatientForm(forms.ModelForm):
                 attrs={'type': 'date'}
             ),
             'phone': forms.TextInput(attrs={'placeholder': '+7 (495) 539-55-19'}),
+            'insurance_number': forms.TextInput(attrs={'placeholder': '123-456-789 00'}),
         }
 
 class DoctorForm(forms.ModelForm):
