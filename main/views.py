@@ -1048,7 +1048,7 @@ def add_reception(request):
                 'password': ''
             })
         except Exception as e:
-           Например, username уже существует
+         
             errors.append(f"Неправильная ошибка: {str(e)}")
             return render(request, 'reception/add.html', {
                 'errors': errors,
