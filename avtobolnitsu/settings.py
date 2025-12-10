@@ -83,7 +83,7 @@ LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/dashboard/'
 LOGOUT_REDIRECT_URL = '/login/'
 
-# Logging
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -103,5 +103,5 @@ LOGGING = {
     },
 }
 
-# Create logs dir
+
 os.makedirs(BASE_DIR / 'logs', exist_ok=True)

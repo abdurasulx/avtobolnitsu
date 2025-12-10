@@ -163,7 +163,6 @@ class PatientListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         qs = super().get_queryset()
         if not self.request.user.is_superuser and hasattr(self.request.user, 'doctor'):
-            # Shifokor faqat o'z bemorlarini ko'radi
             qs = qs.filter(visit__doctor=self.request.user.doctor)
         return qs.distinct()
 
@@ -175,7 +174,6 @@ class PatientListView(LoginRequiredMixin, ListView):
 @login_required
 def patient_detail(request, pk):
     patient = get_object_or_404(Patient, pk=pk)
-    # Permission check
     if not request.user.is_superuser and hasattr(request.user, 'doctor'):
         if not Visit.objects.filter(patient=patient, doctor=request.user.doctor).exists():
             messages.error(request, "У вас нет разрешения (доступа).")
@@ -235,7 +233,6 @@ def export_patients_csv(request):
     logger.info(f"Пользователь {request.user} экспортировал CSV-файл пациентов")
     return response
 
-# Doctors
 class DoctorListView(LoginRequiredMixin, ListView):
     model = Doctor
     template_name = 'doctors/list.html'
@@ -310,35 +307,29 @@ class DoctorProfileView(LoginRequiredMixin, DetailView):
     context_object_name = 'doctor'
 
     def get_object(self, queryset=None):
-        # Foydalanuvchining o'ziga tegishli Doctor obyektini qaytaradi
         return get_object_or_404(Doctor, user=self.request.user)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Parol formasi (faqat admin emas, oddiy foydalanuvchi uchun ham)
         context['password_form'] = SetPasswordForm(user=self.request.user)
         return context
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
 
-        # Foydalanuvchi "parolni o‘zgartirish" formasini yuborganmi, tekshiramiz
         new_password1 = request.POST.get('new_password1', '').strip()
         new_password2 = request.POST.get('new_password2', '').strip()
 
-        # Agar ikkala parol ham bo‘sh bo‘lsa, hech narsa o‘zgartirmay qaytamiz
         if not new_password1 and not new_password2:
             messages.info(request, "Изменения не были внесены.")
             return redirect('doctor_profile')
 
-        # Parol formasi bilan tekshiruv
         form = SetPasswordForm(user=request.user, data=request.POST)
         if form.is_valid():
             form.save()
             messages.success(request, "Пароль успешно изменён.")
             return redirect('doctor_profile')
         else:
-            # Xatolik bo‘lsa, sahifani xatolik bilan qaytaradi
             context = self.get_context_data()
             context['password_form'] = form
             return self.render_to_response(context)@login_required
@@ -351,7 +342,6 @@ def export_doctors_csv(request):
         writer.writerow([doctor.id, doctor.user.username, doctor.department.name if doctor.department else '', doctor.specialty])
     return response
 
-# Visits
 class VisitListView(LoginRequiredMixin, ListView):
     model = Visit
     template_name = 'visits/list.html'
@@ -403,16 +393,14 @@ class VisitUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return super().get_template_names()
 
     def form_valid(self, form):
-        # Avval ma'lumotni saqlaymiz
         self.object = form.save()
         logger.info(f"Пользователь {self.request.user} обновил посещение {self.object.id}")
 
         user = self.request.user
-        # So‘ng rolga qarab redirect qilamiz
         if user.is_superuser:
-            return redirect(reverse('dashboard'))  # admin dashboard
+            return redirect(reverse('dashboard'))  
         elif is_doctor(user):
-            return redirect(reverse('dashboard'))  # doctor sahifasi
+            return redirect(reverse('dashboard'))  
         else:
             return super().form_valid(form)
 
@@ -440,7 +428,6 @@ def export_visits_csv(request):
         writer.writerow([visit.id, str(visit.patient), str(visit.doctor) if visit.doctor else '', visit.diagnosis[:50], visit.visit_datetime])
     return response
 
-# LabTests
 class LabTestListView(LoginRequiredMixin, ListView):
     model = LabTest
     template_name = 'labtests/list.html'
@@ -509,7 +496,6 @@ def export_labtests_csv(request):
         writer.writerow([test.id, str(test.patient), test.test_type, test.result[:50], test.result_date])
     return response
 
-# Medicines
 class MedicineListView(LoginRequiredMixin, ListView):
     model = Medicine
     template_name = 'medicines/list.html'
@@ -568,10 +554,9 @@ def export_medicines_csv(request):
         writer.writerow([med.id, med.name, med.description[:50], med.unit_price])
     return response
 
-# PatientMedicine
 class PatientMedicineListView(LoginRequiredMixin, ListView):
     model = PatientMedicine
-    template_name = 'patientmedicines/list.html'  # Alohida template
+    template_name = 'patientmedicines/list.html'  
     context_object_name = 'patient_medicines'
 
     def get_queryset(self):
@@ -636,13 +621,11 @@ def export_patientmedicines_csv(request):
         writer.writerow([pm.id, str(pm.patient), str(pm.medicine), pm.quantity, pm.prescribed_date])
     return response
 
-# Auth
 def signup(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
             user = form.save()
-            # Group qo'shish uchun admin paneldan
             username = form.cleaned_data.get('username')
             messages.success(request, f'Пользователь {username} успешно создан. Войдите, пожалуйста.')
             logger.info(f"Новый пользователь {username} зарегистрировался")
@@ -1065,7 +1048,7 @@ def add_reception(request):
                 'password': ''
             })
         except Exception as e:
-          # Например, username уже существует
+           Например, username уже существует
             errors.append(f"Неправильная ошибка: {str(e)}")
             return render(request, 'reception/add.html', {
                 'errors': errors,

@@ -53,8 +53,7 @@ class Patient(models.Model):
     
 
     def save(self, *args, **kwargs):
-        # Faqat yangi obyekt yaratilganda (update emas) va user yo'q bo'lsa
-        if not self.pk and not self.user:  # self.pk None bo'lsa - yangi obyekt
+        if not self.pk and not self.user:
             username = make_login(to_latin(f"{self.first_name}{self.last_name}"))
             password = f"{self.first_name}{self.last_name}2024!"
       
@@ -63,13 +62,13 @@ class Patient(models.Model):
                 username=username,
                 first_name=self.first_name,
                 last_name=self.last_name,
-                password=password  # make_password o'rniga to'g'ridan-to'g'ri password uzating (create_user hash qiladi)
+                password=password  
 
             )
         
-            self.plain_password = password  # Oddiy parolni saqlaymiz
+            self.plain_password = password 
         
-        super().save(*args, **kwargs)  # Standart save ni chaqiring
+        super().save(*args, **kwargs) 
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"

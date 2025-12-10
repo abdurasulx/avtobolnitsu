@@ -29,7 +29,7 @@ class PatientForm(forms.ModelForm):
         }
 
 class DoctorForm(forms.ModelForm):
-    # User bilan bog'liq maydonlar
+   
     username = forms.CharField(label="Логин", max_length=150)
     first_name = forms.CharField(label="Имя", max_length=150)
     last_name = forms.CharField(label="Фамилия", max_length=150)
@@ -75,7 +75,7 @@ class DoctorForm(forms.ModelForm):
         """Yaratish va yangilashni to'g'ri ajratadi."""
         doctor = super().save(commit=False)
 
-        # Agar mavjud doctorni tahrirlayotgan bo'lsak
+
         if doctor.pk:
             doctor.img = self.cleaned_data['img']
             user = doctor.user
@@ -86,7 +86,7 @@ class DoctorForm(forms.ModelForm):
         
             user.save()
         else:
-            # Yangi doctor uchun yangi user yaratish
+       
             if User.objects.filter(username=self.cleaned_data['username']).exists():
                 raise forms.ValidationError("❌ Этот логин уже используется.")
             user = User.objects.create_user(
@@ -94,7 +94,7 @@ class DoctorForm(forms.ModelForm):
                 first_name=self.cleaned_data['first_name'],
                 last_name=self.cleaned_data['last_name'],
                 email=self.cleaned_data['email'],
-                password='12345'  # ⚠️ vaqtinchalik parol
+                password='12345'  
             )
             doctor.user = user
 
@@ -230,7 +230,7 @@ class SetPPasswordForm(forms.Form):
         if password1 and password2 and password1 != password2:
             raise forms.ValidationError("Пароли не совпадают.")
 
-        # optional: Django parol tekshiruvlarini ishlatish
+
         validate_password(password1, self.user)
 
         return cleaned_data
@@ -239,23 +239,23 @@ class ReceptionForm(forms.ModelForm):
     first_name = forms.CharField(label='Имя', required=True)
     last_name = forms.CharField(label='Фамилия', required=True)
     username = forms.CharField(label='Логин', required=True)
-    # email = forms.EmailField(label='Email', required=True)  # User uchun majburiy
+
     password = forms.CharField(label='Пароль', widget=forms.PasswordInput, required=True)
 
     class Meta:
         model = Reception
-        fields = []  # Reception'ga qo'shimcha maydon yo'q, user yaratamiz
+        fields = []  
 
     def save(self, commit=True):
-        # Yangi user yaratish
+ 
         user = User.objects.create_user(
             username=self.cleaned_data['username'],
-            # email=self.cleaned_data['email'],
+         
             password=self.cleaned_data['password'],
             first_name=self.cleaned_data['first_name'],
             last_name=self.cleaned_data['last_name']
         )
-        # Reception yaratish va user bilan bog'lash
+ 
         reception = super().save(commit=False)
         reception.user = user
         if commit:
@@ -270,7 +270,7 @@ class ReceptionEditForm(forms.ModelForm):
 
     class Meta:
         model = Reception
-        fields = []  # Reception modelida qo'shimcha maydon yo'q
+        fields = []  
 
     def save(self, commit=True):
         reception = super().save(commit=False)
@@ -310,7 +310,6 @@ class DepartmentForm(forms.ModelForm):
             }),
         }
 
-# New form for patient appointment booking
 class AppointmentForm(forms.ModelForm):
     booking_for_self = forms.BooleanField(
         required=False, 
@@ -319,7 +318,7 @@ class AppointmentForm(forms.ModelForm):
         widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
     )
     
-    # Fields for booking another patient
+
     other_first_name = forms.CharField(
         required=False, 
         max_length=100,
@@ -367,7 +366,7 @@ class AppointmentForm(forms.ModelForm):
         booking_for_self = cleaned_data.get('booking_for_self')
         
         if not booking_for_self:
-            # Validate other patient fields
+      
             if not cleaned_data.get('other_first_name'):
                 raise forms.ValidationError('Имя пациента обязательно')
             if not cleaned_data.get('other_last_name'):

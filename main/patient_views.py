@@ -4,7 +4,6 @@ from django.contrib import messages
 from .models import Patient, Doctor, Visit, LabTest, PatientMedicine
 from .forms import AppointmentForm
 
-# New views for patient menu enhancements
 @login_required
 def patient_prescriptions(request):
     """View for patient to see their prescriptions/medicines"""
@@ -44,9 +43,7 @@ def patient_book_appointment(request):
             if booking_for_self:
                 patient = current_patient
             else:
-                # Create or get the other patient
-                # Note: This simple logic assumes phone is unique enough or we create a new one.
-                # Ideally we should check if patient exists by more fields, but for now this matches the requirement.
+              
                 patient, created = Patient.objects.get_or_create(
                     first_name=form.cleaned_data['other_first_name'],
                     last_name=form.cleaned_data['other_last_name'],
@@ -54,14 +51,14 @@ def patient_book_appointment(request):
                     defaults={
                         'birth_date': form.cleaned_data['other_birth_date'],
                         'gender': form.cleaned_data['other_gender'],
-                        # Address and other fields might be empty for now
+                     
                     }
                 )
             
             visit = form.save(commit=False)
             visit.patient = patient
-            visit.diagnosis = '' # Default empty
-            visit.treatment_plan = '' # Default empty
+            visit.diagnosis = '' 
+            visit.treatment_plan = '' 
             visit.save()
             
             messages.success(request, "Запись успешно создана!")
