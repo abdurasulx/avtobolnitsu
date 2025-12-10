@@ -55,13 +55,7 @@ def make_login(s: str, length_min: int = 6, length_max: int = 12) -> str:
 
 
 def make_password(s: str, length_min: int = 8, length_max: int = 10) -> str:
-    """
-    s(matn) asosida tasodifiy parol yaratadi.
-    - Parol uzunligi length_min..length_max orasida bo'ladi.
-    - Parol asosan s dan olinadi; agar s ichida raqam yoki simvol mavjud bo'lmasa,
-      xavfsizlik uchun kichik sonli raqam/simvol qo'shadi.
-    - Natija katta-kichik harf, raqam va simvol kombinatsiyasini ta'minlashga harakat qiladi.
-    """
+   
     if not isinstance(s, str):
         raise TypeError("s must be a str")
     pool = _clean_pool(s)

@@ -61,7 +61,7 @@ class DoctorForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-        """Tahrirlash paytida mavjud user ma'lumotlarini formga to'ldirib qo'yish."""
+       
         super().__init__(*args, **kwargs)
         if self.instance and self.instance.pk:
             user = self.instance.user
@@ -72,7 +72,7 @@ class DoctorForm(forms.ModelForm):
             self.fields['img'].initial = self.instance.img
 
     def save(self, commit=True):
-        """Yaratish va yangilashni to'g'ri ajratadi."""
+     
         doctor = super().save(commit=False)
 
 

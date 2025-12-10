@@ -6,7 +6,7 @@ from .forms import AppointmentForm
 
 @login_required
 def patient_prescriptions(request):
-    """View for patient to see their prescriptions/medicines"""
+  
     patient = getattr(request.user, 'patient', None)
     if not patient:
         messages.error(request, "Профиль пациента не найден.")
@@ -17,7 +17,7 @@ def patient_prescriptions(request):
 
 @login_required
 def patient_labtests(request):
-    """View for patient to see their lab tests"""
+ 
     patient = getattr(request.user, 'patient', None)
     if not patient:
         messages.error(request, "Профиль пациента не найден.")
@@ -28,7 +28,7 @@ def patient_labtests(request):
 
 @login_required
 def patient_book_appointment(request):
-    """View for patient to book an appointment for self or another patient"""
+
     
     current_patient = getattr(request.user, 'patient', None)
     if not current_patient:
