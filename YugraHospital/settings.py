@@ -27,7 +27,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'avtobolnitsu.urls'
+ROOT_URLCONF = 'YugraHospital.urls'
 
 
 TEMPLATES = [
@@ -46,7 +46,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'avtobolnitsu.wsgi.application'
+WSGI_APPLICATION = 'YugraHospital.wsgi.application'
 
 DATABASES = {
     'default': {
@@ -75,7 +75,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'avtobolnitsu' / 'static']
+STATICFILES_DIRS = [BASE_DIR / 'YugraHospital' / 'static']
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
